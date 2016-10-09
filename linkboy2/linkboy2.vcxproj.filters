@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Logger">
+      <UniqueIdentifier>{3089feaf-1e54-4807-9a76-21e11c11db9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Logger">
+      <UniqueIdentifier>{41e5b0a1-4a45-4352-be6a-c0c1da2ad954}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MBC">
+      <UniqueIdentifier>{325c7300-c10b-4190-901c-dea5865c1709}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MBC">
+      <UniqueIdentifier>{dce8bf81-2c9c-43f8-b6c0-1583e81143bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SFML-GUI">
+      <UniqueIdentifier>{30cddf76-8564-49bb-8ab8-e1ee364c4e1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SFML-GUI">
+      <UniqueIdentifier>{fc214e67-a4e2-4a9c-9677-c402f9953978}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\gbz80.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\linkboy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\mmu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ppu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\DebugLogger\CycleLogger.cpp">
+      <Filter>Source Files\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\DebugLogger\FileLogger.cpp">
+      <Filter>Source Files\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MBC\baseMBC.cpp">
+      <Filter>Source Files\MBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MBC\MBC1.cpp">
+      <Filter>Source Files\MBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MBC\MBC3.cpp">
+      <Filter>Source Files\MBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\includes\common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SFML-GUI\Button.cpp">
+      <Filter>Source Files\SFML-GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SFML-GUI\FileMenu.cpp">
+      <Filter>Source Files\SFML-GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SFML-GUI\Label.cpp">
+      <Filter>Source Files\SFML-GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SFML-GUI\MainMenu.cpp">
+      <Filter>Source Files\SFML-GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SFML-GUI\Rectangle.cpp">
+      <Filter>Source Files\SFML-GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SFML-GUI\SFML_Display.cpp">
+      <Filter>Source Files\SFML-GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\includes\Directory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MBC\MBC5.cpp">
+      <Filter>Source Files\MBC</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\includes\gbz80.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\linkboy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\mmu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\ppu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\Display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\DebugLogger\BaseLogger.h">
+      <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\DebugLogger\CycleLogger.h">
+      <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\DebugLogger\FileLogger.h">
+      <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\MBC\baseMBC.h">
+      <Filter>Header Files\MBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\MBC\MBC1.h">
+      <Filter>Header Files\MBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\MBC\MBC3.h">
+      <Filter>Header Files\MBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\SFML-GUI\Button.h">
+      <Filter>Header Files\SFML-GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\SFML-GUI\FileMenu.h">
+      <Filter>Header Files\SFML-GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\SFML-GUI\Label.h">
+      <Filter>Header Files\SFML-GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\SFML-GUI\MainMenu.h">
+      <Filter>Header Files\SFML-GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\SFML-GUI\Rectangle.h">
+      <Filter>Header Files\SFML-GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\Directory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\MBC\MBC5.h">
+      <Filter>Header Files\MBC</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

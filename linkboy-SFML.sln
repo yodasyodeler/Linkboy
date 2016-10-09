@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "linkboy2", "linkboy2\linkboy2.vcxproj", "{59AC19ED-3775-4F64-809E-2CC6EE9AC79E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "linkboyServer", "linkboyServer\linkboyServer.vcxproj", "{53BCD844-B4ED-44D7-866F-DC658685C7EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59AC19ED-3775-4F64-809E-2CC6EE9AC79E}.Debug|x64.ActiveCfg = Debug|x64
+		{59AC19ED-3775-4F64-809E-2CC6EE9AC79E}.Debug|x64.Build.0 = Debug|x64
+		{59AC19ED-3775-4F64-809E-2CC6EE9AC79E}.Debug|x86.ActiveCfg = Debug|Win32
+		{59AC19ED-3775-4F64-809E-2CC6EE9AC79E}.Debug|x86.Build.0 = Debug|Win32
+		{59AC19ED-3775-4F64-809E-2CC6EE9AC79E}.Release|x64.ActiveCfg = Release|x64
+		{59AC19ED-3775-4F64-809E-2CC6EE9AC79E}.Release|x64.Build.0 = Release|x64
+		{59AC19ED-3775-4F64-809E-2CC6EE9AC79E}.Release|x86.ActiveCfg = Release|Win32
+		{59AC19ED-3775-4F64-809E-2CC6EE9AC79E}.Release|x86.Build.0 = Release|Win32
+		{53BCD844-B4ED-44D7-866F-DC658685C7EE}.Debug|x64.ActiveCfg = Debug|x64
+		{53BCD844-B4ED-44D7-866F-DC658685C7EE}.Debug|x64.Build.0 = Debug|x64
+		{53BCD844-B4ED-44D7-866F-DC658685C7EE}.Debug|x86.ActiveCfg = Debug|Win32
+		{53BCD844-B4ED-44D7-866F-DC658685C7EE}.Debug|x86.Build.0 = Debug|Win32
+		{53BCD844-B4ED-44D7-866F-DC658685C7EE}.Release|x64.ActiveCfg = Release|x64
+		{53BCD844-B4ED-44D7-866F-DC658685C7EE}.Release|x64.Build.0 = Release|x64
+		{53BCD844-B4ED-44D7-866F-DC658685C7EE}.Release|x86.ActiveCfg = Release|Win32
+		{53BCD844-B4ED-44D7-866F-DC658685C7EE}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
