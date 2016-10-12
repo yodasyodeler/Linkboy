@@ -7,7 +7,7 @@ Gameboy Emulator in written C++ using SFML. Only tested in Windows
 
 <img src="https://cloud.githubusercontent.com/assets/9373330/19297477/3c4ead46-8ffa-11e6-815f-f1eca8caeb48.png" width="280" height="252"/>
 <img src="https://cloud.githubusercontent.com/assets/9373330/19297476/388f558e-8ffa-11e6-9acd-ab64ebf5f8af.png" width="280" height="252"/>
-<img src="https://cloud.githubusercontent.com/assets/9373330/19225267/9613d17a-8e4d-11e6-8e14-085f12e8c9c2.png" width="280" height="252"/>
+<img src="https://cloud.githubusercontent.com/assets/9373330/19297602/74a99f42-8ffb-11e6-906d-c74a240e25a2.png" width="280" height="252"/>
 
 ## Features   
    Save/Load States    
