@@ -1,4 +1,4 @@
-#include "DebugLogger\SmartLogger.h"
+#include "DebugLogger/SmartLogger.h"
 
 SmartLogger::~SmartLogger()
 {
@@ -68,9 +68,9 @@ void SmartLogger::log(debug & log)
 			case 0xD9:
 
 			default:
+				break;
 		}
 	}
-	
 }
 
 SmartLogger* SmartLogger::getInstance()

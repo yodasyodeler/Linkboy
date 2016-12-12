@@ -15,7 +15,14 @@ MBC1::MBC1(const char* filename, uint8_t* bank0)
 }
 
 MBC1::~MBC1()
-{}
+{
+	delete [] m_savefile;
+	delete [] ExtRAM;
+	delete [] swRom;
+	m_savefile = nullptr;
+	ExtRAM = nullptr;
+	swRom = nullptr;
+}
 
 void MBC1::updateMBC(const uint16_t address, const uint8_t data)
 {
@@ -62,7 +69,8 @@ uint8_t MBC1::readExtRam(const uint16_t address)
 uint8_t MBC1::readSwRom(const uint16_t address)
 {
 	uint8_t temp = m_RomBank;
-	temp |= (m_modeSelect ? 0 : (m_RamBank<<4));
+	temp |= (m_modeSelect ? 0 : (m_RamBank<<5));
+	temp %= m_romSize;
 
 	return swRom[(temp*0x4000) + (address & 0x3FFF)];
 }

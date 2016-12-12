@@ -1,4 +1,4 @@
-#include "SFML-GUI\MainMenu.h"
+#include "SFML-GUI/MainMenu.h"
 
 MainMenu::MainMenu()
 {
@@ -74,7 +74,7 @@ void MainMenu::scaleMenu(sf::Vector2f scale)
 		m_menu[i].scaleButton(scale);
 }
 
-void MainMenu::setFont(sf::Font & font)
+void MainMenu::setFont(const sf::Font & font)
 {
 	for (int i=0; i<4; ++i)
 		m_label[i].setFont(font);

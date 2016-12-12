@@ -7,7 +7,7 @@ const int timer::frequencies[4] {
 	gbFrequency / 4096,
 	gbFrequency / 262144,
 	gbFrequency / 65536,
-	gbFrequency / 16384,
+	gbFrequency / 16384
 };
 
 #ifdef USING_SFML_TIME
@@ -113,20 +113,36 @@ void timer::advanceTimer( const int cycle )
 	uint8_t timerControl = m_memory->mmIO[TIMA_CONTROL];
 	 
 	if (m_serialActive == false) {
-		if (m_memory->mmIO[SERIAL_CONTROL] & 0x80 && m_memory->mmIO[SERIAL_CONTROL] & 0x1) {
-			m_serialActive		= true;
+		//Serial on and Internal Clk
 			m_serialCount		= 0;
+		if (m_memory->mmIO[SERIAL_CONTROL] & 0x80 && m_memory->mmIO[SERIAL_CONTROL] & 0x1) { 
+			m_serialActive		= true;
+			m_messageOut		= true;
 		}
+		//Serial on and External Clk
+		//else if (m_memory->mmIO[SERIAL_CONTROL] & 0x80) {
+			//Read Data - External Clock, additional things need to be checked
+		//	m_messageIn 			= true;
+		//}
 	}
 	else {
 		m_serialCount += cycle;
-		if (m_serialCount > serialInterval) {
+		//Internal Time Out
+		if (m_serialCount > 50000) {
 			m_memory->mmIO[IF]				|= 0x8;
 			m_memory->mmIO[SERIAL_CONTROL]	&= ~0x80;
 
-			m_memory->mmIO[SERIAL_DATA]		= 0xFF;			//Dummy Read
+			//Read Data - Internal Clock | Will break if not connected
+			//m_memory->mmIO[SERIAL_DATA]		= 0xFF;			//Dummy Read
 
 			m_serialActive					= false;
+		}
+	}
+	if (m_memory->mmIO[SERIAL_CONTROL] == 0x80) {
+		m_serialInCount += cycle;
+		if (m_serialInCount > 5000) {
+			m_serialInCount = 0;
+			m_messageIn = true;
 		}
 	}
 
@@ -192,4 +208,32 @@ uint32_t timer::loadFromFile(const char * filename, const uint32_t offset)
 double timer::getFPS()
 {
 	return m_framePerSecond;
+}
+
+bool timer::getMessageOut()
+{
+	return m_messageOut;
+}
+
+void timer::clrMessageOut()
+{
+	m_messageOut = false;
+}
+
+bool timer::getMessageIn()
+{
+	return (m_memory->mmIO[SERIAL_CONTROL] == 0x80) && m_messageIn;
+}
+
+//Double Check behavior of serial - external clock		
+void timer::clrMessageIn()
+{
+	m_messageIn = false;
+}
+
+void timer::clrSerialIn()
+{
+	m_memory->mmIO[IF]	|= 0x8;
+	m_memory->mmIO[SERIAL_CONTROL]	&= ~0x80;
+	m_serialActive		= false;
 }

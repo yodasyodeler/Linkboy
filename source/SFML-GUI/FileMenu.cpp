@@ -1,4 +1,4 @@
-#include "SFML-GUI\FileMenu.h"
+#include "SFML-GUI/FileMenu.h"
 
 FileMenu::FileMenu(const char* dirName)
 {
@@ -205,7 +205,7 @@ void FileMenu::moveUpDirectory()
 
 void FileMenu::displayDirectory()
 {
-	int count = m_fileDir.readDirectory();
+	m_fileDir.readDirectory();
 
 	for (int i = 1; i < 7; ++i) {
 		fileSelectBtn[i].setText(m_fileDir.getFileName(i+m_startOffset-1));
@@ -221,7 +221,7 @@ const char* FileMenu::selectFile(int index)
 
 	if (index >= 0) {
 		if (m_fileDir.isDir(index + m_startOffset)) {
-				if (strncmp(m_fileDir.getFileName(index + m_startOffset), "..", 3) == 0) {
+				if (lb_strncmp(m_fileDir.getFileName(index + m_startOffset), "..", 3) == 0) {
 					moveUpDirectory();
 					displayDirectory();
 				}

@@ -1,4 +1,4 @@
-#include "SFML-GUI\Button.h"
+#include "SFML-GUI/Button.h"
 
 Button::Button()
 	:Label()

@@ -18,7 +18,14 @@ MBC3::MBC3(const char* filename, uint8_t* bank0)
 }
 
 MBC3::~MBC3()
-{}
+{
+	delete [] m_savefile;
+	delete [] ExtRAM;
+	delete [] swRom;
+	m_savefile = nullptr;
+	ExtRAM = nullptr;
+	swRom = nullptr;
+}
 
 void MBC3::updateMBC(const uint16_t address, const uint8_t data)
 {

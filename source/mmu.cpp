@@ -25,14 +25,9 @@ const uint8_t MMU::bios[0x100] = {
 MMU::MMU(const char* filename)
 	:inBIOS(true)
 {
-		//mmIO[LCDC_CONTROL] = 0x91;
-		//mmIO[SCX] = 0x00;
-		//mmIO[SCY] = 0x00;
-		//mmIO[LYC] = 0x00;
-		//mmIO[BGP] = 0xFC;
-		//mmIO[OBP0] = 0xFF;
-		//mmIO[OBP1] = 0xFF;
 	mmIO[CONTROLLER_REG] = 0xCF;
+	if (filename != nullptr)
+		loadGame(filename);
 }
 
 MMU::~MMU()
@@ -43,6 +38,8 @@ MMU::~MMU()
 void MMU::loadGame(const char * filename)
 {
 	inBIOS = true;
+	mmIO[SCX] = 0;
+	mmIO[SCY] = 0;
 	delete mbc;
 	mbc = nullptr;
 	if (filename != nullptr) {

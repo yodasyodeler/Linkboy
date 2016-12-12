@@ -1,6 +1,8 @@
 #include "Display.h"
-#include "SFML-GUI\MainMenu.h"
-#include "SFML-GUI\FileMenu.h"
+#include "SFML-GUI/MainMenu.h"
+#include "SFML-GUI/FileMenu.h"
+#include "SFML-GUI/NetworkMenu.h"
+#include "SFML-GUI/LobbyMenu.h"
 
 
 using sf::Keyboard;
@@ -27,7 +29,7 @@ static Keyboard::Key	MENU	=	Keyboard::Escape;
 
 static bool pauseFocus	= false;
 static bool showMenu = false;
-static int displaySpeed = false;
+static int displaySpeed = 0;
 
 static sf::Font font;
 static Label text;
@@ -37,8 +39,13 @@ static Rectangle background;
 //Main Menu
 static MainMenu mainMenu;
 
-//fileMenu
+//file Menu
 static FileMenu fileMenu;
+
+//network Menu
+static NetworkMenu networkMenu;
+
+static LobbyMenu lobbyMenu;
 
 static const char* SPEED_OUTPUT[11] {
 	"25%",
@@ -55,16 +62,20 @@ static const char* SPEED_OUTPUT[11] {
 };
 
 void handleGame(const sf::Event& event, emulatorSettings& settings);
+
 void handleMenu(const sf::Event& event, emulatorSettings& settings);
+
 void handleFile(const sf::Event& event, emulatorSettings& settings);
-void handleLink(const sf::Event& event, emulatorSettings& settings);
+
+void handleNetwork(const sf::Event& event, emulatorSettings& settings);
 
 static void (*eventState) (const sf::Event&, emulatorSettings& settings) = handleGame;
 
 void initScreen(const int winX, const int winY, const uint32_t* pix, const char* dirName)
 {
 	sf::Image icon;
-	icon.loadFromFile("../assets/linkboyIcon.png");
+	if (!icon.loadFromFile("../assets/linkboyIcon.png"))
+		std::cerr << "Failed to load icon";
 
 	pixels = (uint8_t*)pix;
 
@@ -74,7 +85,7 @@ void initScreen(const int winX, const int winY, const uint32_t* pix, const char*
 	sprite.setTexture(texture);
 	sprite.setScale(2,2);
 	
-	if (!font.loadFromFile("..\\assets\\arial.ttf")) {
+	if (!font.loadFromFile("../assets/arial.ttf")) {
 		std::cerr << "Failed to load Font \n";
 		exit(-1);
 	}
@@ -89,10 +100,11 @@ void initScreen(const int winX, const int winY, const uint32_t* pix, const char*
 
 	mainMenu.setFont(font);
 	fileMenu.setFont(font);
+	networkMenu.setFont(font);
 
 	background.setSize({ (float)winX, (float)winY });
 	background.setPos({ 0,0 });
-	background.setColorForeground(sf::Color(31,31,20,90));
+	background.setColorForeground(sf::Color(31,31,20,120));
 
 	fileMenu.changeDirectory(dirName);
 	//fileMenu.moveUpDirectory();
@@ -109,7 +121,7 @@ void renderScreen()
 
 	window.draw(mainMenu);
 	window.draw(fileMenu);
-
+	window.draw(networkMenu);
 	window.draw(text);
 
 	window.display();
@@ -119,9 +131,9 @@ bool handleEvents( emulatorSettings& settings)
 {
 	sf::Event event;
 
-	while (window.pollEvent(event)) {
+	settings.operation = NoOperation;
+	while (window.pollEvent(event))
 		eventState(event, settings);
-	}
 
 	//Timer Delay for Label
 	if (displaySpeed == 2)
@@ -131,6 +143,7 @@ bool handleEvents( emulatorSettings& settings)
 
 	return !window.isOpen();
 }
+
 void handleGame(const sf::Event& event, emulatorSettings& settings)
 {
 	sf::Vector2f scale;
@@ -190,16 +203,26 @@ void handleGame(const sf::Event& event, emulatorSettings& settings)
 				renderScreen();
 			}
 
-			if (event.key.code == Keyboard::F1)
+			if (event.key.code == Keyboard::F1) {
 				settings.color = 1;
-			if (event.key.code == Keyboard::F2)
+				settings.operation = ChangeColor;
+			}
+			if (event.key.code == Keyboard::F2) {
 				settings.color = 2;
-			if (event.key.code == Keyboard::F3)
+				settings.operation = ChangeColor;
+			}
+			if (event.key.code == Keyboard::F3) {
 				settings.color = 3;
-			if (event.key.code == Keyboard::F4)
+				settings.operation = ChangeColor;
+			}
+			if (event.key.code == Keyboard::F4) {
 				settings.color = 4;
-			if (event.key.code == Keyboard::F5)
+				settings.operation = ChangeColor;
+			}
+			if (event.key.code == Keyboard::F5) {
 				settings.color = 5;
+				settings.operation = ChangeColor;
+			}
 
 			if (event.key.code == Keyboard::F8) {
 				displaySpeed += 1;
@@ -209,14 +232,11 @@ void handleGame(const sf::Event& event, emulatorSettings& settings)
 				text.setVisible(displaySpeed > 0);
 			}
 
-		/*	if (event.key.code == Keyboard::Multiply)
-				settings.breakpoint = -2;*/
-
-
 			if ((event.key.code == Keyboard::Add) || (event.key.code == Keyboard::Equal)) {
 				if (settings.speed < 10) {
 					settings.speed += 1;
 					text.setText(SPEED_OUTPUT[settings.speed]);
+					settings.operation = ChangeSpeed;
 				}
 			}
 
@@ -224,27 +244,29 @@ void handleGame(const sf::Event& event, emulatorSettings& settings)
 				if (settings.speed > 0) {
 					settings.speed -= 1;
 					text.setText(SPEED_OUTPUT[settings.speed]);
+					settings.operation = ChangeSpeed;					
 				}
 			}
 
 			if (event.key.code == Keyboard::Home)
-				settings.saveState = 1;
+				settings.operation = LoadGameState;
 
 			if (event.key.code == Keyboard::End)
-				settings.saveState = 2;
+				settings.operation = SaveGameState;
 			break;
 
-		case sf::Event::LostFocus: 
-			//pauseFocus = true;
-			break;
-		case sf::Event::GainedFocus:
-			//pauseFocus = false;
-			break;
+		// case sf::Event::LostFocus: 
+		// 	pauseFocus = true;
+		// 	break;
+		// case sf::Event::GainedFocus:
+		// 	pauseFocus = false;
+		// 	break;
 		default:
 			break;
 	}
 
 }
+
 void handleMenu(const sf::Event& event, emulatorSettings& settings)
 {
 	sf::Vector2f scale;
@@ -268,19 +290,21 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings)
 				eventState = handleGame;
 				renderScreen();
 			}
-			
 			if (event.key.code == UP) {
+				
 				renderScreen();
 			}
 			if (event.key.code == LEFT) {
 				mainMenu.displayMainMenu(false);
 				fileMenu.displayFileMenu(true);
 				eventState = handleFile;
-
 				renderScreen();
 			}
 				
 			if (event.key.code == RIGHT) {
+				mainMenu.displayMainMenu(false);
+				networkMenu.displayNetworkMenu(true);
+				eventState = handleNetwork;
 				renderScreen();
 			}
 			if (event.key.code == MENU) {
@@ -305,10 +329,15 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings)
 						renderScreen();
 						break;
 					case 0b0010:
-						//displayFileMenu(showMenu);
 						renderScreen();
 						break;
 					case 0b0100:
+						mainMenu.displayMainMenu(false);
+						//if (settings.networkConnected)
+						networkMenu.displayNetworkMenu(true);
+						//else
+							//lobbyMenu.displayLobbyMenu(true);
+						eventState = handleNetwork;
 						renderScreen();
 						break;
 					case 0b1000:
@@ -328,6 +357,7 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings)
 			break;
 	}
 }
+
 void handleFile(const sf::Event& event, emulatorSettings& settings)
 {
 	sf::Vector2f scale;
@@ -360,6 +390,7 @@ void handleFile(const sf::Event& event, emulatorSettings& settings)
 				if ((settings.loadGameFile = fileMenu.selectFile(-1)) != nullptr) {
 					fileMenu.displayFileMenu(false);
 					background.setVisible(false);
+					settings.operation = LoadGame;
 					eventState = handleGame;
 				}
 				renderScreen();
@@ -386,6 +417,7 @@ void handleFile(const sf::Event& event, emulatorSettings& settings)
 						if ((settings.loadGameFile = fileMenu.selectFile(0)) != nullptr) {
 							fileMenu.displayFileMenu(false);
 							background.setVisible(false);
+							settings.operation = LoadGame;							
 							eventState = handleGame;
 						}
 						renderScreen();
@@ -394,6 +426,7 @@ void handleFile(const sf::Event& event, emulatorSettings& settings)
 						if ((settings.loadGameFile = fileMenu.selectFile(1)) != nullptr) {
 							fileMenu.displayFileMenu(false);
 							background.setVisible(false);
+							settings.operation = LoadGame;							
 							eventState = handleGame;
 						}
 						renderScreen();
@@ -402,6 +435,7 @@ void handleFile(const sf::Event& event, emulatorSettings& settings)
 						if ((settings.loadGameFile = fileMenu.selectFile(2)) != nullptr) {
 							fileMenu.displayFileMenu(false);
 							background.setVisible(false);
+							settings.operation = LoadGame;							
 							eventState = handleGame;
 						}
 						renderScreen();
@@ -410,6 +444,7 @@ void handleFile(const sf::Event& event, emulatorSettings& settings)
 						if ((settings.loadGameFile = fileMenu.selectFile(3)) != nullptr) {
 							fileMenu.displayFileMenu(false);
 							background.setVisible(false);
+							settings.operation = LoadGame;							
 							eventState = handleGame;
 						}
 						renderScreen();
@@ -418,6 +453,7 @@ void handleFile(const sf::Event& event, emulatorSettings& settings)
 						if ((settings.loadGameFile = fileMenu.selectFile(4)) != nullptr) {
 							fileMenu.displayFileMenu(false);
 							background.setVisible(false);
+							settings.operation = LoadGame;							
 							eventState = handleGame;
 						}
 						renderScreen();
@@ -426,6 +462,7 @@ void handleFile(const sf::Event& event, emulatorSettings& settings)
 						if ((settings.loadGameFile = fileMenu.selectFile(5)) != nullptr) {
 							fileMenu.displayFileMenu(false);
 							background.setVisible(false);
+							settings.operation = LoadGame;							
 							eventState = handleGame;
 						}
 						renderScreen();
@@ -457,5 +494,58 @@ void handleFile(const sf::Event& event, emulatorSettings& settings)
 			break;
 	}
 }
-void handleLink(const sf::Event& event, emulatorSettings& settings)
-{}
+
+void handleNetwork(const sf::Event& event, emulatorSettings& settings)
+{
+	sf::Vector2f scale;
+
+	switch (event.type) {
+
+		case sf::Event::Closed:
+			window.close();
+			break;
+
+		case sf::Event::Resized:
+			scale = { event.size.width / (160.0f*2.0f), event.size.height / (144.0f*2.0f) };
+			mainMenu.scaleMenu(scale);
+			networkMenu.scaleMenu(scale);
+			renderScreen();
+			break;
+
+		case sf::Event::TextEntered:
+			networkMenu.checkKeyPress(event.key.code);
+			renderScreen();
+			break;
+
+		case sf::Event::KeyReleased:
+			if (event.key.code == MENU) {
+				mainMenu.displayMainMenu(true);
+				networkMenu.displayNetworkMenu(false);
+				eventState = handleMenu;
+				renderScreen();
+			}
+
+			break;
+
+		case sf::Event::MouseButtonReleased:
+			if (event.mouseButton.button == sf::Mouse::Left) {
+
+				if (networkMenu.checkButtonPress(sf::Mouse::getPosition(window))) {			//----------ToDo: move code up a layer------------
+					/* try to connect */
+					settings.network.ip = networkMenu.getIPAddress();
+					settings.network.port = networkMenu.getPort();
+					settings.network.name = networkMenu.getName();
+					
+					mainMenu.displayMainMenu(true);
+					networkMenu.displayNetworkMenu(false);
+					settings.operation = ConnectToServer;					
+					eventState = handleMenu;
+				}
+				renderScreen();
+			}
+			break;
+
+		default:
+			break;
+	}
+}

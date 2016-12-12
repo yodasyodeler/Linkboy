@@ -1,5 +1,7 @@
 #include "linkboy.h"
 
+bool expectingMessage = false;
+
 linkboy::linkboy(const char* dirName, const char* filename)
 	:m_memory(filename),   m_cpu(&m_memory),  
 	 m_display(&m_memory), m_timer(&m_memory)
@@ -26,34 +28,10 @@ void linkboy::startEmulation()
 {
 	int		CPUCycle	=	0;
 	bool	quit		=	false;
-	char	buffer[100]	= {};
 
 	while (!quit) {
-		quit = handleEvents(m_settings);
-
-		m_timer.changeSpeed(m_settings.speed);
-		m_display.changeColor(m_settings.color);
-
-		if (m_settings.loadGameFile != nullptr) {
-			loadGame(m_settings.loadGameFile);
-			m_settings.loadGameFile = nullptr;
-		}
-
-#ifdef DEBUG
-		//set breakpoint
-		if (breakpoint == -2) {
-			do {
-				std::cout << "\nNew Breakpoint: ";
-				std::cin  >> buffer;
-			} while (!convertString(breakpoint, buffer, 16));
-		}
-#endif
-
-		if (m_settings.saveState == 1)
-			loadState();
-		if (m_settings.saveState == 2)
-			saveState();
-
+		quit = handleEvents(m_settings);			//Handle Events
+		handleSettings();
 
 		//CPU Step
 		if ( !m_settings.pause && m_timer.advanceCPU()) 
@@ -64,6 +42,8 @@ void linkboy::startEmulation()
 				m_timer.advanceTimer(CPUCycle);
 				//Sound
 				m_display.advanceState(CPUCycle);
+				//link cable
+				handleNetwork();
 
 				if (!m_cpu.getHalt())
 					CPUCycle = m_cpu.advanceCPU();
@@ -75,7 +55,7 @@ void linkboy::startEmulation()
 
 			} while ( !m_display.isVBlank() && !m_settings.pause);
 			
-			if ( !m_display.isDisplayOn() )
+			if ( m_display.isDisplayOn() == false )
 				m_display.clearDisplay();
 
 			//max renders to 60fps
@@ -87,11 +67,45 @@ void linkboy::startEmulation()
 	}
 }
 
+void linkboy::handleSettings()
+{
+	switch (m_settings.operation) {
+		case NoOperation:
+			break;
+		case LoadGame:
+			loadGame(m_settings.loadGameFile);
+			break;
+		case ChangeColor:
+			m_display.changeColor(m_settings.color);		
+			break;
+		case ChangeSpeed:
+			if (m_client.getConnected() == false)
+				m_timer.changeSpeed(m_settings.speed);
+			break;
+		case SaveGameState:
+			saveState();			
+			break;
+		case LoadGameState:
+			loadState();			
+			break;
+		case ConnectToServer:
+			if (m_client.getConnected() == false) {
+				if (m_client.joinServer(m_settings.network.ip, m_settings.network.port, m_settings.network.name) ) {
+					m_timer.changeSpeed(3);
+					if (m_client.joinLobby(0) == 0)    //Till a GUI is made
+						m_client.createLobby();
+				}
+			} 
+			break;
+		default:
+			break;
+	}
+
+}
+
 void linkboy::saveState()
 {
 	uint32_t offset;
-
-	m_settings.saveState = 0;
 
 	if (m_saveState != nullptr) {
 		offset = m_memory.saveToFile(m_saveState, 0);
@@ -103,8 +117,6 @@ void linkboy::saveState()
 void linkboy::loadState()
 {
 	uint32_t offset;
-
-	m_settings.saveState = 0;
 
 	if (m_saveState != nullptr) {
 		std::ifstream file(m_saveState, ios::in);
@@ -123,52 +135,52 @@ void linkboy::loadState()
 
 void linkboy::checkDebug()
 {
-#ifdef DEBUG
-	//if breakpoint hit
-	if (m_cpu.getPC() == breakpoint) {
-		buffer[0] = '\0';
-		std::cout << "Breakpoint hit: " << std::hex << m_cpu.getPC();
+	#ifdef DEBUG
+		//if breakpoint hit
+		if (m_cpu.getPC() == breakpoint) {
+			buffer[0] = '\0';
+			std::cout << "Breakpoint hit: " << std::hex << m_cpu.getPC();
 
-		while (buffer[0] != 'q' && buffer[0] != 'r' && buffer[0] != '*') {
-			std::cout << "\ncmd: ";
-			std::cin  >> buffer; 
+			while (buffer[0] != 'q' && buffer[0] != 'r' && buffer[0] != '*') {
+				std::cout << "\ncmd: ";
+				std::cin  >> buffer; 
 
-			switch (buffer[0]) {
-			case 'h':
-				std::cout << "\tq: end Breakpoint\n\tr: run\n\tb: new breakpoint\n\t*: exit program\n\n";
-				break;
-			case 'q':
-				breakpoint = -1;
-				break;
-			case 'r':
-				break;
-			case 'b':
-				do {
-					std::cout << "\nNew Breakpoint: ";
-					std::cin  >> buffer;
-				} while (!convertString(breakpoint, buffer, 16));
-				break;
-			case '*':
-				m_settings.pause = true;
-				quit = true;
-				break;
-			default:
-				break;
+				switch (buffer[0]) {
+				case 'h':
+					std::cout << "\tq: end Breakpoint\n\tr: run\n\tb: new breakpoint\n\t*: exit program\n\n";
+					break;
+				case 'q':
+					breakpoint = -1;
+					break;
+				case 'r':
+					break;
+				case 'b':
+					do {
+						std::cout << "\nNew Breakpoint: ";
+						std::cin  >> buffer;
+					} while (!convertString(breakpoint, buffer, 16));
+					break;
+				case '*':
+					m_settings.pause = true;
+					quit = true;
+					break;
+				default:
+					break;
+				}
 			}
 		}
-	}
-#endif
+	#endif
 }
 
 void linkboy::loadGame(const char * filename)
 {
 	if (filename != nullptr) {
-		int len = strlen(filename);
+		int len = lb_strlen(filename);
 
 		delete [] m_saveState;
 		m_saveState = new char[len + 4];
 
-		strcpy_s(m_saveState, len + 1, filename);
+		lb_strcpy(m_saveState, filename);
 
 		m_saveState[len - 2] = 's';
 		m_saveState[len - 1] = 't';
@@ -179,5 +191,36 @@ void linkboy::loadGame(const char * filename)
 
 		m_memory.loadGame(filename);
 		m_cpu.loadGame();
+	}
+}
+
+void linkboy::handleNetwork()
+{
+	uint8_t gameMessage = m_memory.rdByteMMU(0xFF01);
+
+	//Check out going messages and send if at right time
+	if (m_client.getConnected()) {
+		if (m_timer.getMessageOut()) {
+			m_client.sendGameMessage(gameMessage);
+			m_timer.clrMessageOut();
+			expectingMessage = true;
+			//std::cout <<"Internal Clock: write -> " << std::hex << (uint32_t)gameMessage << "\n";
+		}
+		else if (expectingMessage && m_client.readGameMessage(gameMessage) != -1) {
+				m_memory.wrByteMMU(0xFF01, gameMessage);
+				//std::cout <<"Internal Clock: read -> " << std::hex << (uint32_t)gameMessage << "\n\n";
+				expectingMessage = false;			
+		}
+		else if(m_timer.getMessageIn() ) {
+			if (m_client.readGameMessage(gameMessage) != -1) {
+				//std::cout << "\nExternal Clock: read  -> " << std::hex << (uint32_t)gameMessage << "\n";
+				//std::cout << "External Clock: write -> " << std::hex << (uint32_t)(m_memory.rdByteMMU(0xFF01)) << "\n\n";
+				m_client.sendGameMessage((m_memory.rdByteMMU(0xFF01)));
+				m_memory.wrByteMMU(0xFF01, gameMessage);
+				m_timer.clrSerialIn();
+			
+			}
+			m_timer.clrMessageIn();
+		}
 	}
 }

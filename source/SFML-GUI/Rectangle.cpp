@@ -1,4 +1,4 @@
-#include "SFML-GUI\Rectangle.h"
+#include "SFML-GUI/Rectangle.h"
 
 Rectangle::Rectangle()
 	:m_foreground(sf::Triangles, 6), m_background(sf::Triangles, 6)

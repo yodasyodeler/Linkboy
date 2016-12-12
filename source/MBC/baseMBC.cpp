@@ -2,10 +2,10 @@
 
 MBC::MBC(const char* filename, const uint8_t* bank0)
 {
-	int n = strlen(filename);
+	int n = lb_strlen(filename);
 
 	m_savefile = new char[n+2];
-	strncpy_s(m_savefile, n+1, filename, n-2 );
+	lb_strcpy(m_savefile, filename);
 
 	m_savefile[n - 2]	= 's';
 	m_savefile[n - 1]	= 'a';
@@ -14,7 +14,7 @@ MBC::MBC(const char* filename, const uint8_t* bank0)
 
 	
 	if (bank0 == nullptr) {
-		std::cerr << "File failed to open file";
+		std::cerr << "File failed to open file\n";
 		exit(-1);
 	}
 
@@ -130,10 +130,11 @@ MBC::MBC(const char* filename, const uint8_t* bank0)
 MBC::~MBC()
 {
 	delete [] m_savefile;
-
 	delete [] ExtRAM;
 	delete [] swRom;
-
+	m_savefile = nullptr;
+	ExtRAM = nullptr;
+	swRom = nullptr;
 }
 
 

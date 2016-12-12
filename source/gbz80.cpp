@@ -388,7 +388,10 @@ int gbz80::advanceCPU()
 	}
 
 	//Log Info
-	m_log->log(debug{ temp, reg, index });
+	if (index != 0x00) {
+		debug de = { temp, reg, index };
+		m_log->log(de);
+	}
 
 	return opcodeCycle;
 

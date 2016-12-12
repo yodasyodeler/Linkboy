@@ -1,8 +1,9 @@
-#include "DebugLogger\CycleLogger.h"
+#include "DebugLogger/CycleLogger.h"
 
 CycleLogger::~CycleLogger()
 {
 	writeLog();
+	std::cout << "Cycle Logger Dtor\n";
 	delete [] m_debug;
 }
 
