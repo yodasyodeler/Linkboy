@@ -108,10 +108,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;C:\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\SFML\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-audio-d.lib;sfml-network-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -145,15 +148,19 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;C:\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\SFML\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-audio.lib;sfml-network.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\apu.h" />
     <ClInclude Include="..\include\common.h" />
     <ClInclude Include="..\include\DebugLogger\BaseLogger.h" />
     <ClInclude Include="..\include\DebugLogger\CycleLogger.h" />
@@ -171,6 +178,7 @@
     <ClInclude Include="..\include\mmu.h" />
     <ClInclude Include="..\include\ppu.h" />
     <ClInclude Include="..\include\SFML-GUI\Button.h" />
+    <ClInclude Include="..\include\SFML-GUI\ControlMenu.h" />
     <ClInclude Include="..\include\SFML-GUI\FileMenu.h" />
     <ClInclude Include="..\include\SFML-GUI\Label.h" />
     <ClInclude Include="..\include\SFML-GUI\LobbyMenu.h" />
@@ -181,6 +189,7 @@
     <ClInclude Include="..\include\timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\apu.cpp" />
     <ClCompile Include="..\source\common.cpp" />
     <ClCompile Include="..\source\DebugLogger\CycleLogger.cpp" />
     <ClCompile Include="..\source\DebugLogger\FileLogger.cpp" />
@@ -196,6 +205,7 @@
     <ClCompile Include="..\source\mmu.cpp" />
     <ClCompile Include="..\source\ppu.cpp" />
     <ClCompile Include="..\source\SFML-GUI\Button.cpp" />
+    <ClCompile Include="..\source\SFML-GUI\ControlMenu.cpp" />
     <ClCompile Include="..\source\SFML-GUI\FileMenu.cpp" />
     <ClCompile Include="..\source\SFML-GUI\Label.cpp" />
     <ClCompile Include="..\source\SFML-GUI\LobbyMenu.cpp" />

@@ -4,8 +4,8 @@ PPU::PPU(MMU* memory)
 	:m_memory(memory)
 {
 	m_color[0] = WHITE;
-	m_color[1] = LIGHTGREY;
-	m_color[2] = DARKGREY;
+	m_color[1] = DARKGREY;
+	m_color[2] = LIGHTGREY;
 	m_color[3] = BLACK;
 }
 
@@ -41,8 +41,8 @@ void PPU::changeColor(const int scheme)
 			m_color[3] = BLACKGB;
 			break;
 		default:
-			m_color[2] = LIGHTGREY;
 			m_color[1] = DARKGREY;
+			m_color[2] = LIGHTGREY;
 			m_color[3] = BLACK;
 	}
 }
@@ -107,7 +107,7 @@ bool PPU::isDisplayOn()
 
 int PPU::HBlank()
 {
-	int re = 80;
+	int re = OAMCycles;
 
 	//State Transition
 	if (m_memory->mmIO[LY] >= 143) {

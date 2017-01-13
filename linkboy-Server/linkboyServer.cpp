@@ -170,18 +170,31 @@ bool Server::removeUser(const Player& player)
 
 bool Server::createLobby(const int index)
 {
+	Lobby* tempLobby;
 	int temp = findFirstLobby();
 
 	message.msgType = Createlobby;
 	if (temp > -1) {
 		message.success = true;
 		m_playerList[index].lobby = temp;
+
+		Lobby lob = {{},1};
+		lb_strcpy(lob, m_message.game);		
+		temp = new Lobby[m_lobbyCount++];
+		for (int i=0; i<m_lobbyCount; ++i)
+			temp[i] = m_lobbyList[i];
+		delete [] tempLobby;
+		m_lobbyList = temp;
+
+		m_lobbyList[m_lobbyCount-1] = tempLobby;
 	}
 	else
 		message.success = false;
 
 	message.lobby = m_playerList[index].lobby;
 	sendMessage(m_playerList[index]);
+
+	
 
 	return message.success;
 }

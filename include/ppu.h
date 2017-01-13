@@ -19,6 +19,11 @@ struct spriteData {
 };
 
 class PPU {
+	static const int OAMCycles		= 80;
+	static const int VRAMCycles		= 172;
+	static const int HBlankCycles	= 204;
+	static const int VBlankCycles	= 4560;
+
 	public:
 		PPU(MMU* memory);
 		~PPU();
@@ -72,7 +77,7 @@ class PPU {
 		const Color RED			= {0xFF0000FF};
 
 		const Color WHITEGB		= {0xFF42FFe7};
-		const Color DARKGB		= {0xFF217b73};
+		const Color DARKGB		= {0xFFFFFFFF};
 		const Color LIGHTGB		= {0xFF29ada5};
 		const Color BLACKGB		= {0xFF214a42};
 

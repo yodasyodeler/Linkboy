@@ -46,6 +46,7 @@ struct debug {
 	regset oldReg;
 	regset reg;
 	uint32_t opcodeIndex;
+	uint32_t cycles;
 };
 
 bool convertString(int& num, const char* buf, const int base);

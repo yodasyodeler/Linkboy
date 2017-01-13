@@ -14,6 +14,7 @@ class MMU
 	friend class PPU;
 	friend class gbz80;
 	friend class timer;
+	friend class APU;
 
 	public:
 		MMU(const char* filename = nullptr);
@@ -62,10 +63,11 @@ enum REGNAME {
 	IF = 0xF,
 	SM1_SWEEP,
 	SM1_LENGTH,
+	SM1_ENVELOPE,
 	SM1_FREQ_LO,
 	SM1_FREQ_HI,
 	SM2_LENGTH = 0x16,
-	SM2_ENVELOP,
+	SM2_ENVELOPE,
 	SM2_FREQ_LO,
 	SM2_FREQ_HI,
 	SM3_CONTROL,
@@ -74,7 +76,7 @@ enum REGNAME {
 	SM3_FREQ_LO,
 	SM3_FREQ_HI,
 	SM4_LENGTH = 0x20,
-	SM4_ENVELOP,
+	SM4_ENVELOPE,
 	SM4_POLY,
 	SM4_COUNTER,
 	S_CHANNEL_CONTROL,

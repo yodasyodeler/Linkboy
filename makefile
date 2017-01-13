@@ -1,4 +1,4 @@
-OBJS= common.o baseMBC.o  MBC1.o MBC3.o mmu.o CycleLogger.o FileLogger.o SmartLogger.o main.o gbz80.o ppu.o timer.o Directory.o Rectangle.o Label.o Button.o TextBox.o  MainMenu.o FileMenu.o NetworkMenu.o LobbyMenu.o SFML_Display.o linkboyClient.o linkboy.o  
+OBJS= common.o baseMBC.o  MBC1.o MBC3.o mmu.o CycleLogger.o FileLogger.o SmartLogger.o main.o gbz80.o ppu.o timer.o apu.o Directory.o Rectangle.o Label.o Button.o TextBox.o  MainMenu.o FileMenu.o ControlMenu.o NetworkMenu.o LobbyMenu.o SFML_Display.o linkboyClient.o linkboy.o  
 #MBC2.o MBC5.o
 CC= g++
 
@@ -7,16 +7,18 @@ VER= -std=gnu++11
 CFLAGS=-Wall -c $(VER)
 LFLAGS=-Wall 
 
-LIBS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-network
+LIBS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-network -lsfml-audio
 
 INCDIR=-Iinclude 
 
 SRC= source/
 INC= include/
 
-EXECUTABLE= release/linkboy
+OUT_DIR= release/
 
-all: linkboy
+EXECUTABLE= $(OUT_DIR)linkboy
+
+all: dir linkboy
 
 linkboy: $(OBJS)
 	$(CC) $(VER) $(OBJS) $(INCDIR) -o $(EXECUTABLE) $(LIBS)
@@ -38,6 +40,9 @@ ppu.o: $(SRC)ppu.cpp $(INC)ppu.h
 
 timer.o: $(SRC)timer.cpp $(INC)timer.h
 	$(CC) $(CFLAGS) $(SRC)timer.cpp $(INCDIR) 
+
+apu.o: $(SRC)apu.cpp $(INC)apu.h
+	$(CC) $(CFLAGS) $(SRC)apu.cpp $(INCDIR)
 
 common.o: $(SRC)common.cpp $(INC)common.h
 	$(CC) $(CFLAGS) $(SRC)common.cpp $(INCDIR) 
@@ -87,6 +92,9 @@ NetworkMenu.o: $(SRC)SFML-GUI/NetworkMenu.cpp $(INC)SFML-GUI/NetworkMenu.h
 LobbyMenu.o: $(SRC)SFML-GUI/LobbyMenu.cpp $(INC)SFML-GUI/LobbyMenu.h
 	$(CC) $(CFLAGS) $(SRC)SFML-GUI/LobbyMenu.cpp $(INCDIR) 
 
+ControlMenu.o: $(SRC)SFML-GUI/ControlMenu.cpp $(INC)SFML-GUI/ControlMenu.h
+	$(CC) $(CFLAGS) $(SRC)SFML-GUI/ControlMenu.cpp $(INCDIR)
+
 SFML_Display.o: $(SRC)SFML-GUI/SFML_Display.cpp
 	$(CC) $(CFLAGS) $(SRC)SFML-GUI/SFML_Display.cpp $(INCDIR) 
 
@@ -102,5 +110,11 @@ SmartLogger.o: $(SRC)DebugLogger/SmartLogger.cpp $(INC)DebugLogger/SmartLogger.h
 linkboyClient.o: $(SRC)linkboyClient.cpp $(INC)linkboyClient.h 
 	$(CC) $(CFLAGS) $(SRC)linkboyClient.cpp $(INCDIR) 
 
+dir: ${OUT_DIR}
+
+${OUT_DIR}:
+	mkdir ${OUT_DIR}
+
 clean:
-	rm $(EXECUTABLE) *.o
+	rm -f $(EXECUTABLE) *.o ${OUT_DIR}*.log
+	rmdir ${OUT_DIR}

@@ -33,7 +33,7 @@ class FileMenu : public sf::Drawable, public sf::Transformable
 
 		Button fileSelectBtn[8];
 		//Button fileNavBtn[3];
-		Rectangle fileBackground;//({ 0,0 }, {40,288}, sf::Color::Black);
+		//Rectangle fileBackground;//({ 0,0 }, {40,288}, sf::Color::Black);
 
 		int m_selection = 0;
 		int m_startOffset = 0;

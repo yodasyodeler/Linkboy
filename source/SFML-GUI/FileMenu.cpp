@@ -48,7 +48,7 @@ void FileMenu::setFont(sf::Font & font)
 void FileMenu::displayFileMenu(bool visible)
 {
 	m_visible = visible;
-	fileBackground.setVisible(visible);
+	//fileBackground.setVisible(visible);
 	for (int i = 0; i < 8; ++i) {
 		fileSelectBtn[i].setVisible(visible);
 		fileSelectBtn[i].setActive(visible);
@@ -143,6 +143,19 @@ void FileMenu::moveSelection(bool upDown)
 				if (m_startOffset > 0) {
 					m_startOffset -= 1;
 				}
+				else {
+					int count = m_fileDir.readDirectory();
+					if (count > 6) {
+						m_startOffset = count - 6;
+						m_selection = 6;
+					}
+					else {
+						m_selection = 6;
+					}
+					for (int i=1; i<7; ++i)
+							fileSelectBtn[i].setColorBackground(sf::Color::Transparent);
+						fileSelectBtn[m_selection].setColorBackground(sf::Color::Blue);
+				}
 				displayDirectory();
 			}
 		}
@@ -158,6 +171,13 @@ void FileMenu::moveSelection(bool upDown)
 
 				if (m_startOffset + m_selection < count) {
 					m_startOffset += 1;
+				}
+				else {
+					m_startOffset = 0;
+					m_selection = 1;
+					for (int i=1; i<7; ++i)
+						fileSelectBtn[i].setColorBackground(sf::Color::Transparent);
+					fileSelectBtn[m_selection].setColorBackground(sf::Color::Blue);
 				}
 				displayDirectory();
 			}
@@ -242,6 +262,6 @@ void FileMenu::draw(sf::RenderTarget & target, sf::RenderStates states) const
 	if (m_visible) {
 		for (int i = 0; i < 8; ++i)
 			target.draw(fileSelectBtn[i], states);
-		target.draw(fileBackground, states);
+		//target.draw(fileBackground, states);
 	} 
 }

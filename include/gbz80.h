@@ -18,7 +18,7 @@ class gbz80{
 		void loadGame();
 
 		int advanceCPU();
-		void processInterrupt();
+		int processInterrupt();
 
 		//getters
 		bool getHalt();
@@ -135,7 +135,7 @@ class gbz80{
 
 		regset reg					=		{};
 		uint8_t opcodeIndex;
-		uint8_t opcodeCycle;
+		uint8_t m_opcodeCycle;
 
 		MMU* m_memory;
 

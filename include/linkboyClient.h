@@ -15,6 +15,7 @@ enum MsgType {
 	Leave,
 	Disconnected
 };
+
 struct msgLinkboy {
 	MsgType msgType;
 	bool moreToRead;
@@ -22,7 +23,7 @@ struct msgLinkboy {
 		char generalMsg[256];
 		struct {
 			char username[31];			
-			char game[16];
+			char game[17];
 		};
 		uint8_t gameMsg;
 	};
@@ -43,7 +44,7 @@ class Client {
 		bool createLobby();
 
 		bool joinLobby(int lobby);
-		void readLobby(int lobby); //return list?
+		const char* readLobby(int lobby); //return list?
 
 		int sendGameMessage(uint8_t msg);
 		int readGameMessage(uint8_t& msg);
@@ -63,6 +64,7 @@ class Client {
 		unsigned short	m_port= 54000;
 		msgLinkboy		m_message;
 		sf::UdpSocket	m_linkSock;
+		char 			m_gameName[17] = {};
 
 		uint8_t gameMessage;
 };

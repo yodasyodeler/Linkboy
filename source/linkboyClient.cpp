@@ -78,20 +78,23 @@ bool Client::joinLobby(int lobby)
 	return re;
 }
 
-void Client::readLobby(int lobby)
+const char* Client::readLobby(int lobby)
 {
 	if (m_connected) {
 		do {
 			m_message.msgType = Readlobby;
 			m_message.lobby = lobby;
+			m_message.moreToRead = false;
 			sendMessage();
 
 			if (readMessage(sf::milliseconds(20)) == 0) {
-				std::cout << "----Lobby: " << m_message.lobby << " ----\n"
-				<< m_message.generalMsg;
+				//std::cout << "----Lobby: " << m_message.lobby << " ----\n"
+				//<< m_message.generalMsg;
+
 			}
 		} while(m_message.moreToRead);
 	} 
+	return nullptr;
 }
 
 int Client::sendMessage(const char * msg, const int len)

@@ -10,6 +10,11 @@ struct Player {
 	int lobby;
 };
 
+struct Lobby {
+	char gameName[17];
+	uint8_t userNum;
+};
+
 enum MsgType {
 	Error = -1,
 	Newuser = 0,
@@ -21,6 +26,7 @@ enum MsgType {
 	Leave,
 	Disconnected
 };
+
 struct msgLinkboy {
 	MsgType msgType;
 	bool moreToRead;
@@ -28,7 +34,7 @@ struct msgLinkboy {
 		char generalMsg[256];
 		struct {
 			char username[31];			
-			char game[16];
+			char game[17];
 		};
 		uint8_t gameMsg;
 	};
@@ -57,7 +63,7 @@ class Server {
 
 		bool sendLobbyGameMessage(const uint8_t message, const Player& player);
 
-		bool createLobby(const int index);
+		bool createLobby(const char* gameName, const int index);
 
 		bool joinLobby(Player& player, const int lobby);
 		
@@ -75,6 +81,8 @@ class Server {
 
 		Player*		m_playerList = nullptr;
 		int			m_playerCount = 0;
+		Lobby*		m_lobbyList = nullptr;
+		int 		m_lobbyCount = 0;
 
 		msgLinkboy message;
 

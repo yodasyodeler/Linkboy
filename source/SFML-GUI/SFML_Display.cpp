@@ -3,7 +3,7 @@
 #include "SFML-GUI/FileMenu.h"
 #include "SFML-GUI/NetworkMenu.h"
 #include "SFML-GUI/LobbyMenu.h"
-
+#include "SFML-GUI/ControlMenu.h"
 
 using sf::Keyboard;
 
@@ -45,7 +45,12 @@ static FileMenu fileMenu;
 //network Menu
 static NetworkMenu networkMenu;
 
+//lobby Menu not in place
 static LobbyMenu lobbyMenu;
+
+//control Menu
+static ControlMenu controlMenu;
+static bool changeKey = false;
 
 static const char* SPEED_OUTPUT[11] {
 	"25%",
@@ -68,6 +73,12 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings);
 void handleFile(const sf::Event& event, emulatorSettings& settings);
 
 void handleNetwork(const sf::Event& event, emulatorSettings& settings);
+
+void handleLobby(const sf::Event& event, emulatorSettings& settings);
+
+void handleControl(const sf::Event& event, emulatorSettings& settings);
+
+void resizeMenus(const sf::Event& event);
 
 static void (*eventState) (const sf::Event&, emulatorSettings& settings) = handleGame;
 
@@ -101,13 +112,14 @@ void initScreen(const int winX, const int winY, const uint32_t* pix, const char*
 	mainMenu.setFont(font);
 	fileMenu.setFont(font);
 	networkMenu.setFont(font);
+	lobbyMenu.setFont(font);
+	controlMenu.setFont(font);
 
 	background.setSize({ (float)winX, (float)winY });
 	background.setPos({ 0,0 });
 	background.setColorForeground(sf::Color(31,31,20,120));
 
 	fileMenu.changeDirectory(dirName);
-	//fileMenu.moveUpDirectory();
 }
 
 void renderScreen()
@@ -122,6 +134,8 @@ void renderScreen()
 	window.draw(mainMenu);
 	window.draw(fileMenu);
 	window.draw(networkMenu);
+	window.draw(lobbyMenu);
+	window.draw(controlMenu);
 	window.draw(text);
 
 	window.display();
@@ -146,16 +160,13 @@ bool handleEvents( emulatorSettings& settings)
 
 void handleGame(const sf::Event& event, emulatorSettings& settings)
 {
-	sf::Vector2f scale;
 	switch(event.type) {
 		case sf::Event::Closed:
 			window.close();
 			break;
 
 		case sf::Event::Resized:
-			scale = { event.size.width / (160.0f*2.0f), event.size.height / (144.0f*2.0f) };
-			mainMenu.scaleMenu(scale);
-			fileMenu.scaleMenu(scale);
+			resizeMenus(event);
 			renderScreen();
 			break;
 
@@ -269,29 +280,28 @@ void handleGame(const sf::Event& event, emulatorSettings& settings)
 
 void handleMenu(const sf::Event& event, emulatorSettings& settings)
 {
-	sf::Vector2f scale;
-
 	switch(event.type) {
 		case sf::Event::Closed:
 			window.close();
 			break;
 
 		case sf::Event::Resized:
-			scale = { event.size.width / (160.0f*2.0f), event.size.height / (144.0f*2.0f) };
-			mainMenu.scaleMenu(scale);
-			fileMenu.scaleMenu(scale);
+			resizeMenus(event);			
 			renderScreen();
 			break;
 
 		case sf::Event::KeyReleased:
 			if (event.key.code == DOWN) {
 				mainMenu.displayMainMenu(false);
-				background.setVisible(false);
-				eventState = handleGame;
+				lobbyMenu.displayLobbyMenu(true);
+				background.setVisible(true);
+				eventState = handleLobby;
 				renderScreen();
 			}
 			if (event.key.code == UP) {
-				
+				mainMenu.displayMainMenu(false);
+				controlMenu.displayControlMenu(true);
+				eventState = handleControl;
 				renderScreen();
 			}
 			if (event.key.code == LEFT) {
@@ -329,6 +339,9 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings)
 						renderScreen();
 						break;
 					case 0b0010:
+						mainMenu.displayMainMenu(false);
+						controlMenu.displayControlMenu(true);
+						eventState = handleControl;
 						renderScreen();
 						break;
 					case 0b0100:
@@ -342,8 +355,9 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings)
 						break;
 					case 0b1000:
 						mainMenu.displayMainMenu(false);
-						background.setVisible(false);
-						eventState = handleGame;
+						lobbyMenu.displayLobbyMenu(true);
+						background.setVisible(true);
+						eventState = handleLobby;
 						renderScreen();
 						break;
 
@@ -360,21 +374,15 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings)
 
 void handleFile(const sf::Event& event, emulatorSettings& settings)
 {
-	sf::Vector2f scale;
-
 	switch (event.type) {
-
 		case sf::Event::Closed:
 			window.close();
 			break;
 
 		case sf::Event::Resized:
-			scale = { event.size.width / (160.0f*2.0f), event.size.height / (144.0f*2.0f) };
-			mainMenu.scaleMenu(scale);
-			fileMenu.scaleMenu(scale);
+			resizeMenus(event);
 			renderScreen();
 			break;
-
 		case sf::Event::KeyReleased:
 			if (event.key.code == DOWN) {
 				fileMenu.moveSelection(0);
@@ -497,18 +505,13 @@ void handleFile(const sf::Event& event, emulatorSettings& settings)
 
 void handleNetwork(const sf::Event& event, emulatorSettings& settings)
 {
-	sf::Vector2f scale;
-
 	switch (event.type) {
-
 		case sf::Event::Closed:
 			window.close();
 			break;
 
 		case sf::Event::Resized:
-			scale = { event.size.width / (160.0f*2.0f), event.size.height / (144.0f*2.0f) };
-			mainMenu.scaleMenu(scale);
-			networkMenu.scaleMenu(scale);
+			resizeMenus(event);			
 			renderScreen();
 			break;
 
@@ -530,7 +533,7 @@ void handleNetwork(const sf::Event& event, emulatorSettings& settings)
 		case sf::Event::MouseButtonReleased:
 			if (event.mouseButton.button == sf::Mouse::Left) {
 
-				if (networkMenu.checkButtonPress(sf::Mouse::getPosition(window))) {			//----------ToDo: move code up a layer------------
+				if (networkMenu.checkButtonPress(sf::Mouse::getPosition(window))) {	
 					/* try to connect */
 					settings.network.ip = networkMenu.getIPAddress();
 					settings.network.port = networkMenu.getPort();
@@ -548,4 +551,231 @@ void handleNetwork(const sf::Event& event, emulatorSettings& settings)
 		default:
 			break;
 	}
+}
+
+void handleLobby(const sf::Event& event, emulatorSettings& settings)
+{
+	switch (event.type) {
+		case sf::Event::Closed:
+			window.close();
+			break;
+
+		case sf::Event::Resized:
+			resizeMenus(event);
+			renderScreen();
+			break;
+		case sf::Event::KeyReleased:
+			if (event.key.code == DOWN) {
+				lobbyMenu.moveSelection(0);
+				renderScreen();
+			}
+
+			if (event.key.code == UP) {
+				lobbyMenu.moveSelection(1);
+				renderScreen();
+			}
+
+			if (event.key.code == START || event.key.code == A) {
+				//if ((settings.loadGameFile = fileMenu.selectFile(-1)) != nullptr) {
+					lobbyMenu.displayLobbyMenu(false);
+					background.setVisible(false);
+					//settings.operation = LoadGame;
+					eventState = handleGame;
+				//}
+				renderScreen();
+			}
+			
+			if (event.key.code == MENU || event.key.code == B) {
+				lobbyMenu.displayLobbyMenu(false);
+				mainMenu.displayMainMenu(true);
+				eventState = handleMenu;
+				renderScreen();
+			}
+			break;
+
+		case sf::Event::MouseButtonReleased:
+			if (event.mouseButton.button == sf::Mouse::Left) {
+				int temp = lobbyMenu.checkButtonPress(sf::Mouse::getPosition(window));
+
+				switch (temp) {
+					case 0b00000001:
+						lobbyMenu.movePage(1);
+						renderScreen();
+						break;
+					case 0b00000010:
+						// if ((settings.loadGameFile = fileMenu.selectFile(0)) != nullptr) {
+							lobbyMenu.displayLobbyMenu(false);
+							background.setVisible(false);
+							// settings.operation = LoadGame;							
+							eventState = handleGame;
+						// }
+						renderScreen();
+						break;
+					case 0b00000100: 
+						// if ((settings.loadGameFile = fileMenu.selectFile(1)) != nullptr) {
+							lobbyMenu.displayLobbyMenu(false);
+							background.setVisible(false);
+							// settings.operation = LoadGame;							
+							eventState = handleGame;
+						// }
+						renderScreen();
+						break;
+					case 0b00001000:
+						// if ((settings.loadGameFile = fileMenu.selectFile(2)) != nullptr) {
+							lobbyMenu.displayLobbyMenu(false);
+							background.setVisible(false);
+							// settings.operation = LoadGame;							
+							eventState = handleGame;
+						// }
+						renderScreen();
+						break;
+					case 0b00010000: 
+						// if ((settings.loadGameFile = fileMenu.selectFile(3)) != nullptr) {
+							lobbyMenu.displayLobbyMenu(false);
+							background.setVisible(false);
+							// settings.operation = LoadGame;							
+							eventState = handleGame;
+						// }
+						renderScreen();
+						break;
+					case 0b00100000: 
+						// if ((settings.loadGameFile = fileMenu.selectFile(4)) != nullptr) {
+							lobbyMenu.displayLobbyMenu(false);
+							background.setVisible(false);
+							// settings.operation = LoadGame;							
+							eventState = handleGame;
+						// }
+						renderScreen();
+						break;
+					case 0b01000000: 
+						// if ((settings.loadGameFile = fileMenu.selectFile(5)) != nullptr) {
+							lobbyMenu.displayLobbyMenu(false);
+							background.setVisible(false);
+							// settings.operation = LoadGame;							
+							eventState = handleGame;
+						// }
+						renderScreen();
+						break;
+					case 0b10000000: 
+						lobbyMenu.movePage(0);
+						renderScreen();
+						break;
+					default:
+						break;
+				}
+			}
+			break;
+
+		case sf::Event::MouseMoved:
+			lobbyMenu.hoverMouse(sf::Mouse::getPosition(window));
+			renderScreen();
+			break;
+
+		case sf::Event::MouseWheelScrolled:
+			if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+				if (event.mouseWheelScroll.delta > 0)
+					lobbyMenu.movePage(1);
+				if (event.mouseWheelScroll.delta < 0)
+					lobbyMenu.movePage(0);
+			renderScreen();
+
+		default:
+			break;
+	}
+}
+
+void handleControl(const sf::Event& event, emulatorSettings& settings)
+{
+	sf::Vector2f scale;
+
+	switch (event.type) {
+		case sf::Event::Closed:
+			window.close();
+			break;
+		case sf::Event::Resized:
+			scale = { event.size.width / (160.0f*2.0f), event.size.height / (144.0f*2.0f) };
+			mainMenu.scaleMenu(scale);
+			networkMenu.scaleMenu(scale);
+			fileMenu.scaleMenu(scale);
+			controlMenu.scaleMenu(scale);
+			renderScreen();
+			break;
+		case sf::Event::KeyReleased:
+			if (event.key.code == MENU) {
+				mainMenu.displayMainMenu(true);
+				controlMenu.displayControlMenu(false);
+				changeKey = false;
+				eventState = handleMenu;
+				renderScreen();
+			}
+			else if (changeKey) {
+				switch (controlMenu.setKey(event.key.code)) {
+					case (1<<0):
+						break;
+					case (1<<1):
+						break;
+					case (1<<2):
+						break;
+					case (1<<3):
+						break;
+					case (1<<4):
+						break;
+					case (1<<5):
+						break;
+					case (1<<6):
+						UP = event.key.code;
+						break;
+					case (1<<7):
+						LEFT = event.key.code;
+						break;
+					case (1<<8):
+						DOWN = event.key.code;
+						break;
+					case (1<<9):
+						RIGHT = event.key.code;
+						break;
+					case (1<<10):
+						A = event.key.code;
+						break;
+					case (1<<11):
+						B = event.key.code;
+						break;
+					case (1<<12):
+						START = event.key.code;
+						break;
+					case (1<<13):
+						SELECT = event.key.code;
+						break;
+					default:
+						break;
+
+
+				}
+				changeKey = false;
+				renderScreen();
+			}
+			break;
+		case sf::Event::MouseButtonReleased:
+			if (event.mouseButton.button == sf::Mouse::Left) {
+				if (controlMenu.checkButtonPress(sf::Mouse::getPosition(window))) {	
+					changeKey = true;
+					renderScreen();					
+				}
+			}
+			break;
+		default:
+			break;
+	}
+}
+
+void resizeMenus(const sf::Event& event)
+{
+	sf::Vector2f scale;
+
+	scale = { event.size.width / (160.0f*2.0f), event.size.height / (144.0f*2.0f) };
+	mainMenu.scaleMenu(scale);
+	networkMenu.scaleMenu(scale);
+	fileMenu.scaleMenu(scale);
+	controlMenu.scaleMenu(scale);
+	lobbyMenu.scaleMenu(scale);
 }

@@ -2,7 +2,8 @@
 #include "SFML-GUI/Button.h"
 #include "linkboyClient.h"
 
-class LobbyMenu {
+class LobbyMenu : public sf::Drawable, public sf::Transformable
+{
 public:
 	LobbyMenu();
 	~LobbyMenu();
@@ -22,12 +23,12 @@ public:
 
 	bool changeLobby(const int lobby);
 	void displayLobby();
-	const char* selectFile(int index);
+	const char* selectLobby(int index);
 
 private:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	Button lobbySelectBtn[8];
+	Button m_lobbySelectBtn[8];
 
 	Client* m_client;
 

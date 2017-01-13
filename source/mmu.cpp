@@ -37,6 +37,7 @@ MMU::~MMU()
 
 void MMU::loadGame(const char * filename)
 {
+	//Select BIOS & Attempt Opening ROM
 	inBIOS = true;
 	mmIO[SCX] = 0;
 	mmIO[SCY] = 0;
@@ -112,7 +113,6 @@ void MMU::loadGame(const char * filename)
 				std::cerr << "MBC not supported:" << cartROM[0x147] << "\n";
 				break;
 		}
-		
 	}
 }
 
@@ -160,7 +160,7 @@ uint8_t MMU::rdByteMMU(uint16_t address)
 		case 0xE000:
 			break;
 		case 0xF000:
-			switch ((address & 0x0F00)){
+			switch ((address & 0x0F00)) {
 				case 0x000: case 0x100: case 0x200: case 0x300:
 				case 0x400: case 0x500: case 0x600: case 0x700:
 				case 0x800: case 0x900: case 0xA00: case 0xB00:
@@ -172,21 +172,76 @@ uint8_t MMU::rdByteMMU(uint16_t address)
 						re = spriteRAM[address & 0x7F];
 					break;
 				case 0xF00:
-					if (address == 0xFF00) {
-						if ( !(mmIO[CONTROLLER_REG] & 0x20) ) {
-							mmIO[CONTROLLER_REG] = (mmIO[CONTROLLER_REG] & 0xF0) | ((JoyPad>>4) & 0xF);
-						}
-						else if ( !(mmIO[CONTROLLER_REG] & 0x10) ) {
-							mmIO[CONTROLLER_REG] = (mmIO[CONTROLLER_REG] & 0xF0) | (JoyPad & 0xF);
-						}
+					address = address &0x00FF;
+					switch (address) {
+						case CONTROLLER_REG:
+							if (!(mmIO[CONTROLLER_REG] & 0x20)) {
+								mmIO[CONTROLLER_REG] = (mmIO[CONTROLLER_REG] & 0xF0) | ((JoyPad >> 4) & 0xF);
+							}
+							else if (!(mmIO[CONTROLLER_REG] & 0x10)) {
+								mmIO[CONTROLLER_REG] = (mmIO[CONTROLLER_REG] & 0xF0) | (JoyPad & 0xF);
+							}
+							re = mmIO[address];
+							break;
+						case SM1_SWEEP:
+							re = mmIO[address] | 0x80;
+							break;
+						case SM1_LENGTH:
+						case SM2_LENGTH:
+							re = mmIO[address] | 0x3F;
+							break;
+						case SM3_CONTROL:
+							re = mmIO[address] | 0x7F;
+							break;
+						case SM1_ENVELOPE:
+						case SM2_ENVELOPE:
+						case SM4_ENVELOPE:
+						case SM4_POLY:
+						case S_CHANNEL_CONTROL:
+						case S_SELECT:
+							re = mmIO[address];
+							break;
+						case SM3_SELECT:
+							re = mmIO[address] | 0x9F;
+							break;
+						case SM1_FREQ_LO:
+						case 0x15:
+						case SM2_FREQ_LO:
+						case SM3_LENGTH:
+						case SM3_FREQ_LO:
+						case 0x1F:
+						case SM4_LENGTH:
+							re = 0xFF;
+							break;
+						case SM1_FREQ_HI:
+						case SM2_FREQ_HI:
+						case SM3_FREQ_HI:
+						case SM4_COUNTER:
+							re = mmIO[address] | 0xBF;
+							break;
+						case S_CONTROL:
+							re = mmIO[address] | 0x70;
+							break;
+						case 0x27:
+						case 0x28:
+						case 0x29:
+						case 0x2A:
+						case 0x2B:
+						case 0x2C:
+						case 0x2D:
+						case 0x2E:
+						case 0x2F:
+							re = 0xFF;
+							break;
+						default:
+							re = mmIO[address];
+							break;
 					}
-
-					re = mmIO[address & 0xFF];
-					break;
 		}
 	}
 	return re;
 }
+
 void MMU::wrByteMMU(uint16_t address, const uint8_t data)
 {
 	switch (address & 0xF000) {
@@ -211,7 +266,7 @@ void MMU::wrByteMMU(uint16_t address, const uint8_t data)
 		case 0xC000:
 		case 0xD000:
 		case 0xE000:
-			internalRAM[address & 0x1FFF] = data;	//
+			internalRAM[address & 0x1FFF] = data;
 			break;
 		case 0xF000:
 			switch ((address & 0x0F00)) {
@@ -251,30 +306,52 @@ void MMU::wrByteMMU(uint16_t address, const uint8_t data)
 							mmIO[address] = data & 0x1F;
 							break;
 						case SM1_SWEEP:
+							mmIO[address] = data & 0x7F;
+							break;
 						case SM1_LENGTH:
 						case SM1_FREQ_LO:
+							mmIO[address] = data;
+							break;
 						case SM1_FREQ_HI:
+							mmIO[address] = data & 0xC7;
 							break;
 						case SM2_LENGTH:
-						case SM2_ENVELOP:
+						case SM2_ENVELOPE:
 						case SM2_FREQ_LO:
+							mmIO[address] = data;
+							break;
 						case SM2_FREQ_HI:
+							mmIO[address] = data & 0xC7;
 							break;
 						case SM3_CONTROL:
+							mmIO[address] = data & 0x80;
+							break;
 						case SM3_LENGTH:
 						case SM3_SELECT:
+							mmIO[address] = data & 0x60;
+							break;
 						case SM3_FREQ_LO:
+							mmIO[address] = data;
+							break;
 						case SM3_FREQ_HI:
+							mmIO[address] = data & 0xC7;
 							break;
 						case SM4_LENGTH:
-						case SM4_ENVELOP:
+							mmIO[address] = data & 0x3F;
+							break;
+						case SM4_ENVELOPE:
 						case SM4_POLY:
+							mmIO[address] = data;
+							break;
 						case SM4_COUNTER:
+							mmIO[address] = data & 0xC0;
 							break;
 						case S_CHANNEL_CONTROL:
 						case S_SELECT:
+							mmIO[address] = data;
+							break;
 						case S_CONTROL:
-						case S_WAVE_RAM:
+							mmIO[address] = (data & 0x80) | (mmIO[address] & 0x7F);
 							break;
 						case LCDC_CONTROL:
 							mmIO[address] = data;
@@ -315,6 +392,7 @@ void MMU::wrByteMMU(uint16_t address, const uint8_t data)
 							break;
 					}
 			}
+		break;
 	}
 }
 
@@ -326,6 +404,7 @@ uint16_t MMU::rdWordMMU(const uint16_t address)
 	return (rdByteMMU(address)<<8) | rdByteMMU(address + 1);
 #endif
 }
+
 void MMU::wrWordMMU(const uint16_t address, const uint16_t data)
 {
 #ifdef LITTLEENDIAN
@@ -350,7 +429,6 @@ uint32_t MMU::saveToFile(const char * filename, const uint32_t offset)
 	uint32_t re = mbc->saveToFile(filename, offset);
 
 	std::ofstream file(filename, ios::app | ios::binary);
-
 	if (file.is_open()) {
 		file.seekp(re, ios::beg);
 	
@@ -362,7 +440,6 @@ uint32_t MMU::saveToFile(const char * filename, const uint32_t offset)
 
 		file.close();
 	}
-
 
 	return re + sizeof(bool) + 0x2000 + 0x2000 + 0xA0 + 0x100;
 }
@@ -387,7 +464,6 @@ uint32_t MMU::loadFromFile(const char * filename, const uint32_t offset)
 
 	return re + sizeof(bool) + 0x2000 + 0x2000 + 0xA0 + 0x100;
 }
-
 
 void MMU::startDMA(const uint16_t address)
 {

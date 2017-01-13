@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 {
 	const int PathLength = 200;
 	char currentPath[PathLength];
-	BaseLogger* log = BaseLogger::getInstance();
+	BaseLogger* log = CycleLogger::getInstance();
 
 	#if defined(_WIN32)
 		lb_strcpy(currentPath, argv[0]);
@@ -35,12 +35,14 @@ int main(int argc, char* argv[])
 		getExectuablePath(currentPath, PathLength);
 	#endif
 
+	//std::cout << "hello: " << currentPath << "\n";
+
 	if (argc > 1) {
 		linkboy boy(log, currentPath, argv[1]);
 		boy.startEmulation();
 	}
 	else {
-		linkboy boy(currentPath);
+		linkboy boy(log, currentPath);
 		boy.startEmulation();
 	}
 

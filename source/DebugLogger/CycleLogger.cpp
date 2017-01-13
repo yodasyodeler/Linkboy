@@ -3,7 +3,6 @@
 CycleLogger::~CycleLogger()
 {
 	writeLog();
-	std::cout << "Cycle Logger Dtor\n";
 	delete [] m_debug;
 }
 
@@ -49,7 +48,8 @@ void CycleLogger::writeLog()
 			<< (uint32_t)temp.reg.a  << "\t" << (uint32_t)temp.reg.f  << "\t" 
 			<< (uint32_t)temp.reg.b  << "\t" << (uint32_t)temp.reg.c  << "\t"
 			<< (uint32_t)temp.reg.d  << "\t" << (uint32_t)temp.reg.e  << "\t"
-			<< (uint32_t)temp.reg.hl << "\t" << (uint32_t)temp.reg.pc << "\n";
+			<< (uint32_t)temp.reg.hl << "\t" << (uint32_t)temp.reg.pc << "\t"
+			<< (uint32_t)temp.cycles << "\n";
 	}
 	file.close();
 

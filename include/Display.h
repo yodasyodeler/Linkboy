@@ -10,7 +10,9 @@ enum settingOperation {
 	ChangeSpeed,
 	SaveGameState,
 	LoadGameState,
-	ConnectToServer
+	ConnectToServer,
+	ReadLobby,
+	JoinLobby
 };
 
 struct networkSettings {
@@ -18,6 +20,11 @@ struct networkSettings {
 	sf::IpAddress ip;
 	unsigned short port;
 	const char* name;
+};
+
+struct lobbySettings {
+	int lobbyIndex;
+	const char* lobbyName[8]; //8 to buffer one up and one down
 };
 
 struct emulatorSettings {
@@ -31,6 +38,7 @@ struct emulatorSettings {
 	uint16_t& joyPad;
 	settingOperation operation;
 	networkSettings network;
+	lobbySettings lobby;
 };
 
 void initScreen(const int winX, const int winY, const uint32_t* pix, const char* dirName = nullptr);

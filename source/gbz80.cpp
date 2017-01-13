@@ -1,40 +1,72 @@
 #include "gbz80.h"
 
 static int opcodeMachineCycles[256] = {
-	 4, 12,  8,  8,  4,  4,  8,  4, 20, 8,  8, 8,  4,  4,  8,  4,	//0x00
-	 4, 12,  8,  8,  4,  4,  8,  4,  8, 8,  8, 8,  4,  4,  8,  4,	//0x10 
-	 8, 12,  8,  8,  4,  4,  8,  4,  8, 8,  8, 8,  4,  4,  8,  4,	//0x20
-	 8, 12,  8,  8, 12, 12, 12,  4,  8, 8,  8, 8,  4,  4,  8,  4,	//0x30
-	 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0x40
-	 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0x50
-	 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0x60
-	 8,  8,  8,  8,  8,  8,  4,  8,  4, 4,  4, 4,  4,  4,  8,  4,	//0x70
-	 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0x80
-	 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0x90
-	 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0xA0
-	 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0xB0
-	 8, 12, 12, 12, 12, 16,  8, 32,  8, 8, 12, 0, 12, 12,  8, 32,	//0xC0
-	 8, 12, 12,  0, 12, 16,  8, 32,  8, 8, 12, 0, 12,  0,  8, 32,	//0xD0
-	12, 12,  8,  0,  0, 16,  8, 32, 16, 4, 16, 0,  0,  0,  8, 32,	//0xE0
-	12, 12,  8,  4,  0, 16,  8, 32, 12, 8, 16, 4,  0,  0,  8, 32,	//0xF0
+	// 4, 12,  8,  8,  4,  4,  8,  4, 20, 8,  8, 8,  4,  4,  8,  4,	//0x00
+	// 4, 12,  8,  8,  4,  4,  8,  4,  8, 8,  8, 8,  4,  4,  8,  4,	//0x10 
+	// 8, 12,  8,  8,  4,  4,  8,  4,  8, 8,  8, 8,  4,  4,  8,  4,	//0x20
+	// 8, 12,  8,  8, 12, 12, 12,  4,  8, 8,  8, 8,  4,  4,  8,  4,	//0x30
+	// 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0x40
+	// 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0x50
+	// 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0x60
+	// 8,  8,  8,  8,  8,  8,  4,  8,  4, 4,  4, 4,  4,  4,  8,  4,	//0x70
+	// 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0x80
+	// 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0x90
+	// 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0xA0
+	// 4,  4,  4,  4,  4,  4,  8,  4,  4, 4,  4, 4,  4,  4,  8,  4,	//0xB0
+	// 8, 12, 12, 12, 12, 16,  8, 32,  8, 8, 12, 0, 12, 12,  8, 32,	//0xC0
+	// 8, 12, 12,  0, 12, 16,  8, 32,  8, 8, 12, 0, 12,  0,  8, 32,	//0xD0
+	//12, 12,  8,  0,  0, 16,  8, 32, 16, 4, 16, 0,  0,  0,  8, 32,	//0xE0
+	//12, 12,  8,  4,  0, 16,  8, 32, 12, 8, 16, 4,  0,  0,  8, 32,	//0xF0
+	1,3,2,2,1,1,2,1,5,2,2,2,1,1,2,1,
+	0,3,2,2,1,1,2,1,3,2,2,2,1,1,2,1,
+	2,3,2,2,1,1,2,1,2,2,2,2,1,1,2,1,
+	2,3,2,2,3,3,3,1,2,2,2,2,1,1,2,1,
+	1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,
+	1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,
+	1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,
+	2,2,2,2,2,2,0,2,1,1,1,1,1,1,2,1,
+	1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,
+	1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,
+	1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,
+	1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,
+	2,3,3,4,3,4,2,4,2,4,3,0,3,6,2,4,
+	2,3,3,0,3,4,2,4,2,4,3,0,3,0,2,4,
+	3,3,2,0,0,4,2,4,4,1,4,0,0,0,2,4,
+	3,3,2,1,0,4,2,4,3,2,4,1,0,0,2,4
 };
 static int extendedOpcodeMachineCycles[256] = {
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x00
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x10
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x20
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x30
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x40
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x50
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x60
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x70
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x80
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x90
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0xA0
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0xB0
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0xC0
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0xD0
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0xE0
-	8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8	//0xF0
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x00
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x10
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x20
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x30
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x40
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x50
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x60
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x70
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x80
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0x90
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0xA0
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0xB0
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0xC0
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0xD0
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8,	//0xE0
+	//8, 8, 8, 8, 8, 8, 16, 8, 8,	8, 8, 8, 8, 8, 16, 8	//0xF0
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,3,2,2,2,2,2,2,2,3,2,
+	2,2,2,2,2,2,3,2,2,2,2,2,2,2,3,2,
+	2,2,2,2,2,2,3,2,2,2,2,2,2,2,3,2,
+	2,2,2,2,2,2,3,2,2,2,2,2,2,2,3,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2,
+	2,2,2,2,2,2,4,2,2,2,2,2,2,2,4,2
 };
 
 /* system functions */
@@ -65,7 +97,7 @@ int gbz80::advanceCPU()
 	uint8_t index;
 
 	opcodeIndex = m_memory->rdByteMMU(reg.pc++);
-	opcodeCycle = opcodeMachineCycles[opcodeIndex];
+	m_opcodeCycle = opcodeMachineCycles[opcodeIndex];
 
 	index = opcodeIndex;
 
@@ -374,7 +406,7 @@ int gbz80::advanceCPU()
 			case 0xEA: wrMem(m_memory->rdWordMMU(reg.pc), reg.a); reg.pc += 2; break;
 			case 0xFA: ldMem(reg.a, m_memory->rdWordMMU(reg.pc)); reg.pc += 2; break;
 
-			case 0xCB: opcodeCycle = extendedOP(); break;
+			case 0xCB: m_opcodeCycle = extendedOP(); break;
 
 			case 0x10: STOP(); break;
 			case 0x76: HALT(); break;
@@ -389,11 +421,11 @@ int gbz80::advanceCPU()
 
 	//Log Info
 	if (index != 0x00) {
-		debug de = { temp, reg, index };
+		debug de = { temp, reg, index, m_opcodeCycle };
 		m_log->log(de);
 	}
 
-	return opcodeCycle;
+	return m_opcodeCycle;
 
 }
 
@@ -707,16 +739,17 @@ int gbz80::extendedOP()
 	return extendedOpcodeMachineCycles[opcodeIndex];
 }
 
-void gbz80::processInterrupt()
+int gbz80::processInterrupt()
 {
 	int i = 4;
+	int re = 0;
 	int polledInterrupts;
 
 	polledInterrupts = m_memory->mmIO[IF] & m_memory->mmIO[IE] & 0x1F;
 	if (polledInterrupts) {
+
 		m_halt = false;
 		if (enableInterrupt) {
-		
 			while (!((polledInterrupts >> i) & 1))
 				--i;
 
@@ -741,8 +774,11 @@ void gbz80::processInterrupt()
 			}
 			enableInterrupt = false;
 			m_memory->mmIO[IF] &= ~(1 << i);
+			re = 5;
 		}
 	}
+
+	return re;
 }
 
 bool gbz80::getHalt()
@@ -1169,20 +1205,28 @@ void gbz80::JPC(const flags flag)
 
 	switch (flag) {
 		case NZero:
-			if (!readZeroFlag(reg.f))
+			if (!readZeroFlag(reg.f)) {
 				reg.pc = addr;
+				m_opcodeCycle += 1;
+			}
 			break;
 		case Zero:
-			if (readZeroFlag(reg.f))
+			if (readZeroFlag(reg.f)) {
 				reg.pc = addr;
+				m_opcodeCycle += 1;
+			}
 			break;
 		case NCarry:
-			if (!readCarryFlag(reg.f))
+			if (!readCarryFlag(reg.f)) {
 				reg.pc = addr;
+				m_opcodeCycle += 1;
+			}
 			break;
 		case Carry:
-			if (readCarryFlag(reg.f))
+			if (readCarryFlag(reg.f)) {
 				reg.pc = addr;
+				m_opcodeCycle += 1;
+			}
 			break;
 	}
 }
@@ -1200,20 +1244,28 @@ void gbz80::JRC(const flags flag)
 
 	switch (flag) {
 		case NZero:
-			if (!readZeroFlag(reg.f))
+			if (!readZeroFlag(reg.f)) {
 				reg.pc += offset;
+				m_opcodeCycle += 1;
+			}
 			break;
 		case Zero:
-			if (readZeroFlag(reg.f))
+			if (readZeroFlag(reg.f)) {
 				reg.pc += offset;
+				m_opcodeCycle += 1;
+			}
 			break;
 		case NCarry:
-			if (!readCarryFlag(reg.f))
+			if (!readCarryFlag(reg.f)) {
 				reg.pc += offset;
+				m_opcodeCycle += 1;
+			}
 			break;
 		case Carry:
-			if (readCarryFlag(reg.f))
+			if (readCarryFlag(reg.f)) {
 				reg.pc += offset;
+				m_opcodeCycle += 1;
+			}
 			break;
 	}
 }
@@ -1235,24 +1287,28 @@ void gbz80::CALLC(const flags flag)
 			if (!readZeroFlag(reg.f)) {
 				push(reg.pc);
 				reg.pc = addr;
+				m_opcodeCycle += 3;
 			}
 			break;
 		case Zero:
 			if (readZeroFlag(reg.f)) {
 				push(reg.pc);
 				reg.pc = addr;
+				m_opcodeCycle += 3;
 			}
 			break;
 		case NCarry:
 			if (!readCarryFlag(reg.f)) {
 				push(reg.pc);
 				reg.pc = addr;
+				m_opcodeCycle += 3;
 			}
 			break;
 		case Carry:
 			if (readCarryFlag(reg.f)) {
 				push(reg.pc);
 				reg.pc = addr;
+				m_opcodeCycle += 3;
 			}
 			break;
 	}
@@ -1279,21 +1335,25 @@ void gbz80::RETC(const flags flag)
 		case NZero:
 			if (!readZeroFlag(reg.f)) {
 				pop(reg.pc);
+				m_opcodeCycle += 3;
 			}
 			break;
 		case Zero:
 			if (readZeroFlag(reg.f)) {
 				pop(reg.pc);
+				m_opcodeCycle += 3;
 			}
 			break;
 		case NCarry:
 			if (!readCarryFlag(reg.f)) {
 				pop(reg.pc);
+				m_opcodeCycle += 3;
 			}
 			break;
 		case Carry:
 			if (readCarryFlag(reg.f)) {
 				pop(reg.pc);
+				m_opcodeCycle += 3;
 			}
 			break;
 	}

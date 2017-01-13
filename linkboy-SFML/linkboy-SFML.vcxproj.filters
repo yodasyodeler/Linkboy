@@ -108,6 +108,12 @@
     <ClInclude Include="..\include\MBC\MBC5.h">
       <Filter>Header Files\MBC</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\SFML-GUI\ControlMenu.h">
+      <Filter>Header Files\SFML-GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\apu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\common.cpp">
@@ -183,6 +189,12 @@
       <Filter>Source Files\SFML-GUI</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SFML-GUI\ControlMenu.cpp">
+      <Filter>Source Files\SFML-GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\apu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
