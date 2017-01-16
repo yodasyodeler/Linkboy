@@ -140,6 +140,11 @@ void APU::advanceSound(const int cycle)
 		m_ch2_on = false;
 		m_ch3_on = false;
 		m_sound_on = false;
+
+		m_framesync_cycle = 0;
+		
+		for (int i=0x10; i<0x30; ++i)
+			m_memory->mmIO[i] = 0;
 	}
 	if (!m_sound_on) {
 		for (int i=0x10; i<0x27; ++i)
@@ -215,7 +220,7 @@ void APU::advanceSound(const int cycle)
 				//Channel 3 - Wave
 				if (m_ch3_on) {
 					duty = m_memory->mmIO[0x30 + (m_ch3_position >> 1)];
-					vol = ((m_memory->mmIO[SM3_SELECT] >> 6) - 1) & 0x3;
+					vol = ((m_memory->mmIO[SM3_SELECT] >> 5) - 1) & 0x3;
 
 					duty = ((duty >> (m_ch3_position & 1)) & 0xF) >> vol;
 

@@ -1,7 +1,7 @@
 OBJS= common.o linkboyServer.o main.o 
 CC=g++
 
-VER= -std=gnu++11
+VER= -std=gnu++11 -pthread
 
 CFLAGS=-Wall -c $(VER)
 

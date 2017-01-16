@@ -27,6 +27,20 @@ enum MsgType {
 	Disconnected
 };
 
+enum consoleMsg {
+	Nop = 0,
+	Help,
+	List,
+	Kick,
+	Ban,
+	Close
+};
+
+struct serverCommand {
+	consoleMsg msg;
+	char user[100];
+};
+
 struct msgLinkboy {
 	MsgType msgType;
 	bool moreToRead;
@@ -49,6 +63,9 @@ class Server {
 
 		bool checkPort();
 
+		bool runCommand(const serverCommand& cmd);
+
+	private:
 		//user functions
 		int addUser(const Player& player);
 
@@ -67,10 +84,8 @@ class Server {
 
 		bool joinLobby(Player& player, const int lobby);
 		
-		//Misc
 		void sendMessage(const Player& player);
 
-	private:
 		int findPlayer(const Player& player);
 
 		int findFirstLobby();
@@ -84,7 +99,7 @@ class Server {
 		Lobby*		m_lobbyList = nullptr;
 		int 		m_lobbyCount = 0;
 
-		msgLinkboy message;
+		msgLinkboy m_message;
 
 		sf::UdpSocket m_socket;
 };
