@@ -76,10 +76,10 @@ class PPU {
 		const Color LIGHTRED	= {0xFF5050C0};
 		const Color RED			= {0xFF0000FF};
 
-		const Color WHITEGB		= {0xFF42FFe7};
-		const Color DARKGB		= {0xFFFFFFFF};
-		const Color LIGHTGB		= {0xFF29ada5};
-		const Color BLACKGB		= {0xFF214a42};
+		const Color WHITEGB		= {0x9bbc0f};
+		const Color LIGHTGB		= {0x8bac0f};
+		const Color DARKGB		= {0x306230};
+		const Color BLACKGB		= {0x0f380f};
 
 		enum { PALETTE_NUM = (1 << 4), X_FLIP = (1 << 5), Y_FLIP = (1 << 6), PRIORITY = (1 << 7) };
 };
