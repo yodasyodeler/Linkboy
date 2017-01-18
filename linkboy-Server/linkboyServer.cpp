@@ -47,7 +47,7 @@ bool Server::checkPort()
 						if (addUser(tempPlayer) == 0)
 							std::cout << "Welcome new player: " << tempPlayer.username << std::endl;
 						else
-							std::cout << "failed to add: " << tempPlayer.username << std::endl;
+							std::cout << "Failed to add: " << tempPlayer.username << std::endl;
 
 						m_message.success = true;
 						sendMessage(tempPlayer);
@@ -89,7 +89,7 @@ bool Server::checkPort()
 					break;
 
 				case Disconnected:
-					removeUser(tempPlayer);
+					removeUser(findPlayer(tempPlayer));
 					break;
 
 				default:
@@ -104,7 +104,7 @@ bool Server::checkPort()
 bool Server::runCommand(const serverCommand& cmd)
 {
 	bool re = false;
-	int index = 0;
+	int index = -1;
 
 	switch (cmd.msg) {
 		case Help:
@@ -124,17 +124,17 @@ bool Server::runCommand(const serverCommand& cmd)
 				std::cout << m_playerList[i].username << " " << m_playerList[i].lobby << " "<< m_playerList[i].port << " " << m_playerList[i].ip <<"\n";  
 		break;
 		case Ban:
-			//Player* tempPlayer = new Player[m_playerCount-1];
-
-			// std::cout << cmd.user <<" :Got Banned\n";
-			// for (int i=0; i<m_playerCount; ++i) {
-			// if (lb_strncmp(cmd.user, m_playerList[index].username, 31))
-			// 	lb_strcpy(tempPlayer[index].username, m_playerList[i].username);
-			// }
-			// delete [] tempPlayer;
-		break;
+			//add to ban list
 		case Kick:
-			std::cout << cmd.user <<" :Got Kicked\n";
+			for (int i = 0; i < m_playerCount && index != -1; ++i) {
+				if (!lb_strncmp(cmd.user, m_playerList[i].username, 31))
+					index = i;
+			}
+
+			if (removeUser(index))
+				std::cout << "Player: " << cmd.user << " Removed from server\n";
+			else
+				std::cout << "Player: " << cmd.user << " not found\n";
 		break;
 		case Close:
 			std::cout << "Closing Server\n";
@@ -190,12 +190,17 @@ int Server::addUser(const Player & player)
 	return re;
 }
 
-bool Server::removeUser(const Player& player)
+bool Server::removeUser(const int index)
 {
-	int index = findPlayer(player);
 	bool re = false;
 
-	if (index >= 0) {
+	if (index >= 0 && index < m_playerCount) {
+		int lobby = m_playerList[index].lobby;
+		if ( lobby != -1) {
+			if (--m_lobbyList[lobby].userNum <= 0)
+				removeLobby(index);
+		}
+
 		Player* temp = new Player[--m_playerCount];
 		int i = 0;
 		for ( i = 0; i < index; ++i)
@@ -205,12 +210,18 @@ bool Server::removeUser(const Player& player)
 			temp[i-1] = m_playerList[i];
 
 		delete [] m_playerList;
-		m_playerList = temp;
+		m_playerList = temp; 
 
 		re = true;
 	}
 
 	return re;
+}
+
+bool Server::removeLobby(const int index)
+{
+
+	return false;
 }
 
 bool Server::createLobby(const char* gameName, const int index)

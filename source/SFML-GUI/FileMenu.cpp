@@ -204,7 +204,7 @@ void FileMenu::movePage(bool upDown)
 	else {
 		int count = m_fileDir.readDirectory();
 
-		if (m_startOffset + m_selection < count) {
+		if (m_startOffset + 6 < count) {
 			m_startOffset += 1;
 		}
 		displayDirectory();

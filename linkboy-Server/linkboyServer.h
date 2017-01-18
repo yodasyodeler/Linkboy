@@ -69,7 +69,9 @@ class Server {
 		//user functions
 		int addUser(const Player& player);
 
-		bool removeUser(const Player& player);
+		bool removeUser(const int index);
+
+		bool Server::removeLobby(const int index);
 
 		bool pollGameLobby(const Player& player, const int lobby);
 
