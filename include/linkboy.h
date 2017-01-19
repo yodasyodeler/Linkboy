@@ -38,6 +38,14 @@ class linkboy {
 
 		char*	m_saveState = nullptr;
 
+		MMU		m_memory;
+		gbz80	m_cpu;
+		PPU		m_display;
+		APU		m_sound;
+		timer	m_timer;
+		Client	m_client;
+		bool	m_pause;
+
 #ifdef USING_SFML_TIME
 		sf::Clock m_clock;
 		sf::Time  cpuTime;
@@ -47,14 +55,6 @@ class linkboy {
 #endif
 		double		m_framePerSecond	= 0;
 		double		m_frameCount		= 0;
-
-		MMU		m_memory;
-		gbz80	m_cpu;
-		PPU		m_display;
-		APU		m_sound;
-		timer	m_timer;
-		Client	m_client;
-		bool	m_pause;
 
 		emulatorSettings m_settings = {false, false, false, 1, 3, nullptr, 0.0, m_memory.JoyPad, NoOperation, {} };
 };

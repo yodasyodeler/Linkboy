@@ -5,8 +5,8 @@ bool expectingMessage = false;
 const double linkboy::gbperiod = (1000000 / 59.7);
 
 linkboy::linkboy(const char* dirName, const char* filename)
-	:m_memory(filename),   m_cpu(&m_memory), m_sound(&m_memory), 
-	 m_display(&m_memory), m_timer(&m_memory), m_clock(),
+	:m_memory(filename), m_cpu(&m_memory), m_display(&m_memory), 
+	 m_sound(&m_memory), m_timer(&m_memory), m_clock(),
 	m_frameInterval(sf::microseconds((uint32_t)gbperiod))
 {
 	frameTime		= m_clock.getElapsedTime();
@@ -17,8 +17,8 @@ linkboy::linkboy(const char* dirName, const char* filename)
 }
 
 linkboy::linkboy(BaseLogger* log, const char* dirName, const char* filename)
-	:m_memory(filename), m_cpu(&m_memory, log), m_sound(&m_memory),
-	m_display(&m_memory), m_timer(&m_memory), m_clock(),
+	:m_memory(filename), m_cpu(&m_memory, log), m_display(&m_memory), 
+	m_sound(&m_memory), m_timer(&m_memory), m_clock(),
 	m_frameInterval(sf::microseconds((uint32_t)gbperiod))
 {
 	frameTime		= m_clock.getElapsedTime();

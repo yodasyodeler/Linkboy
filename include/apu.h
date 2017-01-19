@@ -43,8 +43,8 @@ class APU {
 		int		m_framesync_cycle = 0;
 		int		m_framesync_count = 0;
 
-		int		m_sample_count			= CyclesPerSample;
-		int		m_sample_index			= 0;
+		uint32_t	m_sample_count			= CyclesPerSample;
+		uint32_t	m_sample_index			= 0;
 
 		bool	m_ch1_on				= false;
 		int		m_ch1_duty_index		= 0;
