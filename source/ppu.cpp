@@ -114,7 +114,7 @@ int PPU::HBlank()
 		m_memory->mmIO[LCDC_STAT] |= 1;
 		m_VBlank = true;
 		m_currentState = &PPU::VBlank;
-		re = 456;
+		re = VBlankLineCycles;
 
 		//Interrupt Mode 1 V-blank
 		if (m_memory->mmIO[LCDC_STAT] & 0x10)
@@ -123,7 +123,6 @@ int PPU::HBlank()
 	}
 	else {
 		m_memory->mmIO[LCDC_STAT] |= 0b10;
-
 		m_currentState = &PPU::readOAM;
 	}
 
@@ -148,7 +147,7 @@ int PPU::readOAM()
 
 	m_currentState				= &PPU::readVRAM;
 
-	return 172;
+	return VRAMCycles;
 }
 
 int PPU::readVRAM()
@@ -461,12 +460,12 @@ int PPU::readVRAM()
 	if (m_memory->mmIO[LCDC_STAT] & 0x08)
 		m_memory->mmIO[IF] |= 2;
 
-	return 204;
+	return HBlankCycles;
 }
 
 int PPU::VBlank()
 {
-	int re = 456;
+	int re = VBlankLineCycles;
 
 	//State Transition
 	if (m_memory->mmIO[LY] >= 153) {
@@ -474,7 +473,7 @@ int PPU::VBlank()
 		m_memory->mmIO[LCDC_STAT]	= ( (m_memory->mmIO[LCDC_STAT] & 0b11111100) | 0b10 );
 
 		m_currentState				= &PPU::readOAM;
-		re							= 80;
+		re							= OAMCycles;
 
 		//Interrupt Mode 2 OAM
 		if (m_memory->mmIO[LCDC_STAT] & 0x20)

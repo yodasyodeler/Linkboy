@@ -19,10 +19,12 @@ struct spriteData {
 };
 
 class PPU {
-	static const int OAMCycles		= 80;
-	static const int VRAMCycles		= 172;
-	static const int HBlankCycles	= 204;
-	static const int VBlankCycles	= 4560;
+	static const int OAMCycles			= 80;
+	static const int VRAMCycles			= 172;
+	static const int HBlankCycles		= 204;
+	static const int VBlankLineCycles	= 456;
+
+	enum { PALETTE_NUM = (1 << 4), X_FLIP = (1 << 5), Y_FLIP = (1 << 6), PRIORITY = (1 << 7) };
 
 	public:
 		PPU(MMU* memory);
@@ -80,6 +82,4 @@ class PPU {
 		const Color LIGHTGB		= {0xFF26837a};
 		const Color DARKGB		= {0xFF406240};
 		const Color BLACKGB		= {0xFF0f380f};
-
-		enum { PALETTE_NUM = (1 << 4), X_FLIP = (1 << 5), Y_FLIP = (1 << 6), PRIORITY = (1 << 7) };
 };
