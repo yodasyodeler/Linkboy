@@ -64,10 +64,10 @@ void MMU::loadGame(const char * filename)
 			case 0x3:
 				mbc = new MBC1(filename, cartROM);
 				break;
-			//case 0x05:
-			//case 0x06:
-			//	mbc = new MBC2(filename, cartROM);
-			//	break;
+			case 0x05:
+			case 0x06:
+				mbc = new MBC2(filename, cartROM);
+				break;
 			case 0x08:
 			case 0x09:
 				mbc = new MBC(filename, cartROM);

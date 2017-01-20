@@ -2,9 +2,11 @@
 #include <stdint.h>
 // #include <string>
 
-#include <MBC/baseMBC.h>
-#include <MBC/MBC1.h>
-#include <MBC/MBC3.h>
+#include "MBC/baseMBC.h"
+#include "MBC/MBC1.h"
+#include "MBC/MBC2.h"
+#include "MBC/MBC3.h"
+
 
 #define LITTLEENDIAN 1
 

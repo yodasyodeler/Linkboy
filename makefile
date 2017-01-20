@@ -1,5 +1,5 @@
-OBJS= common.o baseMBC.o  MBC1.o MBC3.o mmu.o CycleLogger.o FileLogger.o SmartLogger.o main.o gbz80.o ppu.o timer.o apu.o Directory.o Rectangle.o Label.o Button.o TextBox.o  MainMenu.o FileMenu.o ControlMenu.o NetworkMenu.o LobbyMenu.o SFML_Display.o linkboyClient.o linkboy.o  
-#MBC2.o MBC5.o
+OBJS= common.o baseMBC.o  MBC1.o MBC2.o MBC3.o mmu.o CycleLogger.o FileLogger.o SmartLogger.o main.o gbz80.o ppu.o timer.o apu.o Directory.o Rectangle.o Label.o Button.o TextBox.o  MainMenu.o FileMenu.o ControlMenu.o NetworkMenu.o LobbyMenu.o SFML_Display.o linkboyClient.o linkboy.o  
+# MBC5.o
 CC= g++
 
 VER= -std=gnu++11
@@ -56,8 +56,8 @@ baseMBC.o: $(SRC)MBC/baseMBC.cpp $(INC)MBC/baseMBC.h
 MBC1.o: baseMBC.o $(SRC)MBC/MBC1.cpp $(INC)MBC/MBC1.h
 	$(CC) $(CFLAGS) $(SRC)MBC/MBC1.cpp $(INCDIR) 
 
-# MBC2.o: baseMBC.o $(SRC)MBC/MBC2.cpp $(INC)MBC/MBC2.h
-# 	$(CC) $(CFLAGS) $(SRC)MBC/MBC2.cpp $(INCDIR) 
+MBC2.o: baseMBC.o $(SRC)MBC/MBC2.cpp $(INC)MBC/MBC2.h
+	$(CC) $(CFLAGS) $(SRC)MBC/MBC2.cpp $(INCDIR) 
 
 MBC3.o: baseMBC.o $(SRC)MBC/MBC3.cpp $(INC)MBC/MBC3.h
 	$(CC) $(CFLAGS) $(SRC)MBC/MBC3.cpp $(INCDIR) 

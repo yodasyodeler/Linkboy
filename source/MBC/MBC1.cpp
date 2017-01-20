@@ -4,9 +4,9 @@ MBC1::MBC1(const char* filename, uint8_t* bank0)
 	:MBC(filename, bank0)
 {
 	switch (bank0[0x147]) {
-		case 0x01:
-		case 0x02:
-		case 0x03:
+		case 1:
+		case 2:
+		case 3:
 			break;
 		default:
 			std::cerr << "Invalid MBC1 value: " << ios::hex << bank0[0x147];

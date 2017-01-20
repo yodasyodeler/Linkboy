@@ -169,12 +169,14 @@ uint32_t MBC::saveToFile(const char * filename, const uint32_t offset)
 		file.seekp(offset, ios::beg);
 		file.write(reinterpret_cast<char*>(&m_RomBank), 1);
 		file.write(reinterpret_cast<char*>(&m_RamBank), 1);
+		file.write(reinterpret_cast<char*>(&m_enableRAM), sizeof(bool));
+
 		if (ExtRAM != nullptr)
 			file.write(reinterpret_cast<char*>(ExtRAM), m_ramSize*m_ramCap);
 		file.close();
 	}
 
-	return offset + 2 + m_ramSize*m_ramCap;
+	return offset + 2 + sizeof(bool) + m_ramSize*m_ramCap;
 }
 
 uint32_t MBC::loadFromFile(const char * filename, const uint32_t offset)
@@ -185,6 +187,8 @@ uint32_t MBC::loadFromFile(const char * filename, const uint32_t offset)
 		file.seekg(offset, ios::beg);
 		file.read(reinterpret_cast<char*>(&m_RomBank), 1);
 		file.read(reinterpret_cast<char*>(&m_RamBank), 1);
+		file.read(reinterpret_cast<char*>(&m_enableRAM), sizeof(bool));
+
 		if (ExtRAM != nullptr)
 			file.read(reinterpret_cast<char*>(ExtRAM), m_ramSize*m_ramCap);
 		file.close();
@@ -197,7 +201,7 @@ uint32_t MBC::loadFromFile(const char * filename, const uint32_t offset)
 	
 
 
-	return offset + 2 + m_ramSize*m_ramCap;
+	return offset + 2 + sizeof(bool) + m_ramSize*m_ramCap;
 }
 
 void MBC::saveRAM()
