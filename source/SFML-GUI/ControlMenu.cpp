@@ -67,7 +67,6 @@ ControlMenu::ControlMenu()
 
 ControlMenu::~ControlMenu()
 {
-
 }
 
 void ControlMenu::setFont(sf::Font& font)

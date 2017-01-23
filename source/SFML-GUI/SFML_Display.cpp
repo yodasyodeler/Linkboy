@@ -4,8 +4,20 @@
 #include "SFML-GUI/NetworkMenu.h"
 #include "SFML-GUI/LobbyMenu.h"
 #include "SFML-GUI/ControlMenu.h"
+#include "SFML-GUI/ColorMenu.h"
 
 using sf::Keyboard;
+
+const char helpText[] = {
+	"---Linkboy help---\n"   \
+	"Use arrow keys or mouse to\n navigate menu\n" \
+	"\t Esc - Menu\n"        \
+	"\t Arrow Keys - dpad\n" \
+	"\t X - A button\n"      \
+	"\t Y - B button\n"      \
+	"\t return - Start button\n" \
+	"\t shift - Select button\n" 
+};
 
 static sf::RenderWindow window;
 static sf::Texture texture;
@@ -29,6 +41,7 @@ static Keyboard::Key	MENU	=	Keyboard::Escape;
 
 static bool pauseFocus	= false;
 static bool showMenu = false;
+static bool showHelp = false;
 static int displaySpeed = 0;
 
 static sf::Font font;
@@ -36,11 +49,17 @@ static Label text;
 
 static Rectangle background;
 
+//Help Screen
+static Label helpMenu;
+
 //Main Menu
 static MainMenu mainMenu;
 
 //file Menu
 static FileMenu fileMenu;
+
+//color Menu
+static ColorMenu colorMenu;
 
 //network Menu
 static NetworkMenu networkMenu;
@@ -77,6 +96,8 @@ void handleNetwork(const sf::Event& event, emulatorSettings& settings);
 void handleLobby(const sf::Event& event, emulatorSettings& settings);
 
 void handleControl(const sf::Event& event, emulatorSettings& settings);
+
+void handleColor(const sf::Event& event, emulatorSettings& settings);
 
 void resizeMenus(const sf::Event& event);
 
@@ -119,6 +140,15 @@ void initScreen(const int winX, const int winY, const uint32_t* pix, const char*
 	background.setPos({ 0,0 });
 	background.setColorForeground(sf::Color(31,31,20,120));
 
+	helpMenu.setSize({(float)winX, (float)winY});
+	helpMenu.setPos({ 0,0 });
+	helpMenu.setFont(font);
+	helpMenu.setAutoResize(false);
+	helpMenu.setFontSize(40);
+	helpMenu.setColorForeground(sf::Color(0,0,160,120));
+	helpMenu.setText(helpText);
+	helpMenu.setTextColor(sf::Color::White);
+
 	fileMenu.changeDirectory(dirName);
 }
 
@@ -130,6 +160,7 @@ void renderScreen()
 	window.draw(sprite);
 
 	window.draw(background);
+	window.draw(helpMenu);
 
 	window.draw(mainMenu);
 	window.draw(fileMenu);
@@ -233,6 +264,10 @@ void handleGame(const sf::Event& event, emulatorSettings& settings)
 			if (event.key.code == Keyboard::F5) {
 				settings.color = 5;
 				settings.operation = ChangeColor;
+			}
+			if (event.key.code == Keyboard::Num9) {
+				showHelp ^= 1;
+				helpMenu.setVisible(showHelp);
 			}
 
 			if (event.key.code == Keyboard::F8) {
@@ -768,6 +803,12 @@ void handleControl(const sf::Event& event, emulatorSettings& settings)
 	}
 }
 
+void handleColor(const sf::Event& event, emulatorSettings& settings)
+{
+
+
+}
+
 void resizeMenus(const sf::Event& event)
 {
 	sf::Vector2f scale;
@@ -778,4 +819,5 @@ void resizeMenus(const sf::Event& event)
 	fileMenu.scaleMenu(scale);
 	controlMenu.scaleMenu(scale);
 	lobbyMenu.scaleMenu(scale);
+	colorMenu.scaleMenu(scale);
 }

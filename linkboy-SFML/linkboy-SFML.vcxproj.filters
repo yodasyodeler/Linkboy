@@ -114,6 +114,12 @@
     <ClInclude Include="..\include\apu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MBC\MBC2.h">
+      <Filter>Header Files\MBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SFML-GUI\ColorMenu.h">
+      <Filter>Header Files\SFML-GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\common.cpp">
@@ -196,6 +202,12 @@
     </ClCompile>
     <ClCompile Include="..\source\apu.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MBC\MBC2.cpp">
+      <Filter>Source Files\MBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SFML-GUI\ColorMenu.cpp">
+      <Filter>Source Files\SFML-GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

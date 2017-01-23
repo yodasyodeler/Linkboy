@@ -71,56 +71,56 @@ void APU::loadGame()
 
 void APU::changeSpeed(const int speed)
 {
-	switch (speed) {
-	case 0:
-		CyclesPerSample = (GBFreq / 4)/SAMPLERATE;
-		//m_soundOn = true;
-		break;
-	case 1:
-		CyclesPerSample = (GBFreq / 2)/SAMPLERATE;
-		//m_soundOn = true;
-		break;
-	case 2:
-		CyclesPerSample = (GBFreq / .75)/SAMPLERATE;
-		//m_soundOn = true;
-		break;
-	case 3:
-		CyclesPerSample = GBFreq/SAMPLERATE;
-		//m_soundOn = true;
-		break;
-	case 4:
-		CyclesPerSample = (GBFreq * 1.5)/SAMPLERATE;
-		//m_soundOn = true;
-		break;
-	case 5:
-		CyclesPerSample = (GBFreq * 2)/SAMPLERATE;
-		//m_soundOn = true;
-		break;
-	case 6:
-		CyclesPerSample = (GBFreq * 3)/SAMPLERATE;
-		//m_soundOn = true;
-		break;
-	case 7:
-		CyclesPerSample = (GBFreq * 4)/SAMPLERATE;
-		//m_soundOn = false;
-		break;
-	case 8:
-		CyclesPerSample = (GBFreq * 5)/SAMPLERATE;
-		//m_soundOn = false;
-		break;
-	case 9:
-		CyclesPerSample = (GBFreq * 7.5)/SAMPLERATE;
-		//m_soundOn = false;
-		break;
-	case 10:
-		CyclesPerSample = (GBFreq * 10)/SAMPLERATE;
-		//m_soundOn = false;
-		break;
-	default:
-		CyclesPerSample = GBFreq/SAMPLERATE;
-		//m_soundOn = false;
-		break;
-	}
+	//switch (speed) {
+	//case 0:
+	//	CyclesPerSample = (GBFreq / 4)/SAMPLERATE;
+	//	//m_soundOn = true;
+	//	break;
+	//case 1:
+	//	CyclesPerSample = (GBFreq / 2)/SAMPLERATE;
+	//	//m_soundOn = true;
+	//	break;
+	//case 2:
+	//	CyclesPerSample = (GBFreq / .75)/SAMPLERATE;
+	//	//m_soundOn = true;
+	//	break;
+	//case 3:
+	//	CyclesPerSample = GBFreq/SAMPLERATE;
+	//	//m_soundOn = true;
+	//	break;
+	//case 4:
+	//	CyclesPerSample = (GBFreq * 1.5)/SAMPLERATE;
+	//	//m_soundOn = true;
+	//	break;
+	//case 5:
+	//	CyclesPerSample = (GBFreq * 2)/SAMPLERATE;
+	//	//m_soundOn = true;
+	//	break;
+	//case 6:
+	//	CyclesPerSample = (GBFreq * 3)/SAMPLERATE;
+	//	//m_soundOn = true;
+	//	break;
+	//case 7:
+	//	CyclesPerSample = (GBFreq * 4)/SAMPLERATE;
+	//	//m_soundOn = false;
+	//	break;
+	//case 8:
+	//	CyclesPerSample = (GBFreq * 5)/SAMPLERATE;
+	//	//m_soundOn = false;
+	//	break;
+	//case 9:
+	//	CyclesPerSample = (GBFreq * 7.5)/SAMPLERATE;
+	//	//m_soundOn = false;
+	//	break;
+	//case 10:
+	//	CyclesPerSample = (GBFreq * 10)/SAMPLERATE;
+	//	//m_soundOn = false;
+	//	break;
+	//default:
+	//	CyclesPerSample = GBFreq/SAMPLERATE;
+	//	//m_soundOn = false;
+	//	break;
+	//}
 }
 
 void APU::advanceSound(const int cycle)

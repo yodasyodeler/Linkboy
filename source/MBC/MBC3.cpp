@@ -169,8 +169,10 @@ void MBC3::swapRomBank(const uint8_t bank)
 
 void MBC3::swapRamBank(const uint8_t bank)
 {
-	m_RamBank = (bank % m_RamBank);
+	//if (m_ramSize > 0) {
+		m_RamBank = bank;//(bank % m_ramSize);
 
-	if (m_RTC && (bank >= 0x8 || bank <= 0xC))
-		m_readRTC = true;
+		if (m_RTC && (bank >= 0x8 || bank <= 0xC))
+			m_readRTC = true;
+	//}
 }
