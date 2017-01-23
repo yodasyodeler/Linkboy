@@ -1,4 +1,6 @@
-OBJS= common.o baseMBC.o  MBC1.o MBC2.o MBC3.o mmu.o CycleLogger.o FileLogger.o SmartLogger.o main.o gbz80.o ppu.o timer.o apu.o Directory.o Rectangle.o Label.o Button.o TextBox.o  MainMenu.o FileMenu.o ControlMenu.o NetworkMenu.o LobbyMenu.o SFML_Display.o linkboyClient.o linkboy.o  
+OBJS= common.o baseMBC.o  MBC1.o MBC2.o MBC3.o mmu.o CycleLogger.o FileLogger.o SmartLogger.o main.o \
+ gbz80.o ppu.o timer.o apu.o Directory.o Rectangle.o Label.o Button.o TextBox.o  MainMenu.o \
+  FileMenu.o ControlMenu.o ColorMenu.o NetworkMenu.o LobbyMenu.o SFML_Display.o linkboyClient.o linkboy.o  
 # MBC5.o
 CC= g++
 
@@ -94,6 +96,9 @@ LobbyMenu.o: $(SRC)SFML-GUI/LobbyMenu.cpp $(INC)SFML-GUI/LobbyMenu.h
 
 ControlMenu.o: $(SRC)SFML-GUI/ControlMenu.cpp $(INC)SFML-GUI/ControlMenu.h
 	$(CC) $(CFLAGS) $(SRC)SFML-GUI/ControlMenu.cpp $(INCDIR)
+
+ColorMenu.o: $(SRC)SFML-GUI/ColorMenu.cpp $(INC)SFML-GUI/ColorMenu.h
+	$(CC) $(CFLAGS) $(SRC)SFML-GUI/ColorMenu.cpp $(INCDIR)
 
 SFML_Display.o: $(SRC)SFML-GUI/SFML_Display.cpp
 	$(CC) $(CFLAGS) $(SRC)SFML-GUI/SFML_Display.cpp $(INCDIR) 
