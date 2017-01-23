@@ -162,17 +162,17 @@ uint32_t MBC3::loadFromFile(const char * filename, const uint32_t offset)
 
 void MBC3::swapRomBank(const uint8_t bank)
 {
-	m_RomBank = (bank & 0x7F) % m_RomBank;
+	m_RomBank = (bank & 0x7F) % m_romSize;
 	if (!m_RomBank)
 		m_RomBank = 1;
 }
 
 void MBC3::swapRamBank(const uint8_t bank)
 {
-	//if (m_ramSize > 0) {
-		m_RamBank = bank;//(bank % m_ramSize);
+	if (m_ramSize > 0) {
+		m_RamBank = (bank % m_ramSize);
 
 		if (m_RTC && (bank >= 0x8 || bank <= 0xC))
 			m_readRTC = true;
-	//}
+	}
 }
