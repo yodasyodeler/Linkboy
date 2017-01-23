@@ -17,12 +17,13 @@ MainMenu::MainMenu()
 
 	for (int i = 0; i < 4; ++i) {
 		m_label[i].setTextColor(sf::Color::White);
+		m_label[i].setColorForeground(sf::Color::Transparent);
 		m_label[i].setSize({ 50, 30 });
 	}
 	m_label[0].setPos({ 32+22,101-30 });
-	m_label[1].setPos({ 117+22,16-30 });
+	m_label[1].setPos({ 117+16,-10 });
 	m_label[2].setPos({ 203+22,101-30 });
-	m_label[3].setPos({ 117+22,186+80 });
+	m_label[3].setPos({ 117+22,186+75 });
 
 	m_label[0].setText("Load");
 	m_label[1].setText("Layout");

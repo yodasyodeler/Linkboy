@@ -64,6 +64,8 @@ void Label::adjustRectangle()
 		m_text.setCharacterSize(m_fontSize);
 		m_text.setPosition({ m_pos.x + 6, (m_size.y / 4) + m_pos.y });
 	}
+	else 
+		m_text.setPosition({ m_pos.x + 6, m_pos.y + 6});
 }
 
 void Label::draw(sf::RenderTarget& target, sf::RenderStates states) const
