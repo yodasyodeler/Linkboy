@@ -18,7 +18,7 @@ ColorMenu::ColorMenu()
 		m_colorButton[i].setColorForeground(m_color[i]);
 		m_colorButton[i].setColorBackground(m_color[i]);
 		m_arrwButton[i].setColorForeground(m_color[i]);
-		m_arrwButton[i].setSize({ ArrowBtn, ArrowBtn });
+		m_arrwButton[i].setSize({ (float)ArrowBtn, (float)ArrowBtn });
 	}
 
 
