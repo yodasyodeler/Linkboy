@@ -721,18 +721,12 @@ void handleLobby(const sf::Event& event, emulatorSettings& settings)
 
 void handleControl(const sf::Event& event, emulatorSettings& settings)
 {
-	sf::Vector2f scale;
-
 	switch (event.type) {
 		case sf::Event::Closed:
 			window.close();
 			break;
 		case sf::Event::Resized:
-			scale = { event.size.width / (160.0f*2.0f), event.size.height / (144.0f*2.0f) };
-			mainMenu.scaleMenu(scale);
-			networkMenu.scaleMenu(scale);
-			fileMenu.scaleMenu(scale);
-			controlMenu.scaleMenu(scale);
+			resizeMenus(event);
 			renderScreen();
 			break;
 		case sf::Event::KeyReleased:
@@ -741,7 +735,6 @@ void handleControl(const sf::Event& event, emulatorSettings& settings)
 				controlMenu.displayControlMenu(false);
 				changeKey = false;
 				eventState = handleMenu;
-				renderScreen();
 			}
 			else if (changeKey) {
 				switch (controlMenu.setKey(event.key.code)) {
@@ -805,8 +798,36 @@ void handleControl(const sf::Event& event, emulatorSettings& settings)
 
 void handleColor(const sf::Event& event, emulatorSettings& settings)
 {
+	switch (event.type) {
+		case sf::Event::Closed:
+			window.close();
+			break;
+		case sf::Event::Resized:
+			resizeMenus(event);
+			renderScreen();
+			break;
+		case sf::Event::KeyReleased:
+				if (event.key.code == MENU) {
+					mainMenu.displayMainMenu(true);
+					colorMenu.displayColorMenu(false);
+					changeKey = false;
+					eventState = handleMenu;
+				}
 
-
+				renderScreen();
+			
+			break;
+		case sf::Event::MouseButtonReleased:
+			if (event.mouseButton.button == sf::Mouse::Left) {
+				switch (colorMenu.checkButtonPress(sf::Mouse::getPosition(window))) {	
+					
+					renderScreen();					
+				}
+			}
+			break;
+		default:
+			break;
+	}
 }
 
 void resizeMenus(const sf::Event& event)

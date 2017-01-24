@@ -6,28 +6,34 @@ ColorMenu::ColorMenu()
 	m_border.setSize({ 320, 60  });
 	m_border.setColorForeground(sf::Color(0xCCCCCCFF));
 
+	m_color[0] = sf::Color::Red;
+	m_color[1] = sf::Color::Blue;
+	m_color[2] = sf::Color::Green;
+	m_color[3] = sf::Color::Black;
+
 	for (int i = 0; i < 4; ++i) {
 		m_colorButton[i].setPos({ (float)(15+(80*i)), (float)(288-60+15) });
 		m_colorButton[i].setSize({ 80,60 });
 		m_colorButton[i].setPadding(5);
-	}
-
-	m_color[1] = sf::Color::Red;
-	m_color[2] = sf::Color::Blue;
-	m_color[3] = sf::Color::Green;
-	m_color[4] = sf::Color::Black;
-
-	for (int i = 0; i < 4; ++i) {
 		m_colorButton[i].setColorForeground(m_color[i]);
 		m_colorButton[i].setColorBackground(m_color[i]);
+		m_arrwButton[i].setColorForeground(m_color[i]);
+		m_arrwButton[i].setSize({ ArrowBtn, ArrowBtn });
 	}
+
+
+	m_arrwButton[0].setPos({ (float)(15+(80)), (float)(288-60+15-10+ArrowBtn*2) });
+	m_arrwButton[1].setPos({ (float)(15+(80)+ArrowBtn), (float)(288-60+15-10+ArrowBtn*3) });
+	m_arrwButton[2].setPos({ (float)(15+(80)+ArrowBtn*2), (float)(288-60+15-10+ArrowBtn*2) });
+	m_arrwButton[3].setPos({ (float)(15+(80)+ArrowBtn), (float)(288-60+15-10+ArrowBtn) });
+
 }
 
 ColorMenu::~ColorMenu()
 {
 }
 
-void ColorMenu::displayControlMenu(bool visible)
+void ColorMenu::displayColorMenu(bool visible)
 {
 	m_visible = visible;
 	for (int i = 0; i < 4; ++i) {
@@ -88,8 +94,10 @@ void ColorMenu::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	if (m_visible) {
 		target.draw(m_border, states);
-		for (int i=0; i<4; ++i)
+		for (int i=0; i<4; ++i) {
+			target.draw(m_arrwButton[i],states);
 			target.draw(m_colorButton[i],states);
+		}
 	}
 }
 
