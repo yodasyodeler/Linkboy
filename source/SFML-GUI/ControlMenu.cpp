@@ -235,7 +235,6 @@ int ControlMenu::setKey(sf::Keyboard::Key key)
 	return re; 
 }
 
-
 void ControlMenu::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	if (m_visible) {

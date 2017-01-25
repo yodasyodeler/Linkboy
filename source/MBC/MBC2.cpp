@@ -11,6 +11,11 @@ MBC2::MBC2(const char* filename, uint8_t* bank0)
 			std::cerr << "Invalid MBC2 value: " << ios::hex << bank0[0x147];
 			exit(-1);
 	}
+	if (ExtRAM != nullptr) {
+		std::cerr << "Invalid MBC2 Ram \n";
+		exit(-2);
+	}
+	ExtRAM = new uint8_t[512];
 }		
 
 MBC2::~MBC2()
@@ -30,11 +35,11 @@ void MBC2::updateMBC(const uint16_t address, const uint8_t data)
 	switch (temp) {
 		case 0:
 		case 1:
-			if (address & 0x100) {
+			//if (address & 0x100) {
 				if (m_saveBattery && m_enableRAM && (data & 0xF) != 0x0A)
 					saveRAM();
 				m_enableRAM = (data & 0xF) == 0xA;
-			}
+			//}
 			break;
 		case 2:
 		case 3:

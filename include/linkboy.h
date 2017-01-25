@@ -6,6 +6,7 @@
 #include "timer.h"
 #include "linkboyClient.h"
 #include "Display.h"
+#include "common.h"
 
 #define USING_SFML_TIME 1
 

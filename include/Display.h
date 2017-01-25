@@ -32,6 +32,7 @@ struct emulatorSettings {
 	bool displayHelp;
 	bool displayOptions;
 	int color;
+	//uint32_t color[4];
 	int speed;
 	const char* loadGameFile;
 	double framesPerSecond;

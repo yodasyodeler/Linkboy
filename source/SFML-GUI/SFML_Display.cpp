@@ -167,6 +167,7 @@ void renderScreen()
 	window.draw(networkMenu);
 	window.draw(lobbyMenu);
 	window.draw(controlMenu);
+	window.draw(colorMenu);
 	window.draw(text);
 
 	window.display();
@@ -328,9 +329,9 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings)
 		case sf::Event::KeyReleased:
 			if (event.key.code == DOWN) {
 				mainMenu.displayMainMenu(false);
-				lobbyMenu.displayLobbyMenu(true);
+				colorMenu.displayColorMenu(true);
 				background.setVisible(true);
-				eventState = handleLobby;
+				eventState = handleColor;
 				renderScreen();
 			}
 			if (event.key.code == UP) {
@@ -390,9 +391,9 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings)
 						break;
 					case 0b1000:
 						mainMenu.displayMainMenu(false);
-						lobbyMenu.displayLobbyMenu(true);
+						colorMenu.displayColorMenu(true);
 						background.setVisible(true);
-						eventState = handleLobby;
+						eventState = handleColor;
 						renderScreen();
 						break;
 
@@ -815,15 +816,14 @@ void handleColor(const sf::Event& event, emulatorSettings& settings)
 				}
 
 				renderScreen();
-			
 			break;
 		case sf::Event::MouseButtonReleased:
-			if (event.mouseButton.button == sf::Mouse::Left) {
-				switch (colorMenu.checkButtonPress(sf::Mouse::getPosition(window))) {	
-					
-					renderScreen();					
-				}
-			}
+			colorMenu.handleButtonPress(sf::Mouse::getPosition(window));
+			renderScreen();
+			break;
+		case sf::Event::MouseMoved:
+			colorMenu.hoverMouse(sf::Mouse::getPosition(window));
+			renderScreen();
 			break;
 		default:
 			break;

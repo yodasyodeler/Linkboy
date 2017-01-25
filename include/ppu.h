@@ -1,15 +1,7 @@
 #pragma once
 #include "mmu.h"
+#include "common.h"
 
-union Color {
-	uint32_t Val;
-	struct{
-		uint8_t Alpha;
-		uint8_t Blue;
-		uint8_t Green;
-		uint8_t Red;
-	};
-};
 
 struct spriteData {
 	int16_t y;
