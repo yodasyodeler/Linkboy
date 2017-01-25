@@ -71,16 +71,16 @@ void ColorMenu::hoverMouse(const sf::Vector2i pos)
 
 	switch (temp){
 		case 0b0001:
-			m_colorButton[0].setColorBackground(sf::Color(m_color[0].r, m_color[0].g, m_color[0].b, 80));
+			m_colorButton[0].setColorBackground(sf::Color(0, 128, 128, 80));
 			break;
 		case 0b0010:
-			m_colorButton[1].setColorBackground(sf::Color(m_color[1].r, m_color[1].g, m_color[1].b, 80));
+			m_colorButton[1].setColorBackground(sf::Color(0, 128, 128, 80));
 			break;
 		case 0b0100:
-			m_colorButton[2].setColorBackground(sf::Color(m_color[2].r, m_color[2].g, m_color[2].b, 80));
+			m_colorButton[2].setColorBackground(sf::Color(0, 128, 128, 80));
 			break;
 		case 0b1000:
-			m_colorButton[3].setColorBackground(sf::Color(m_color[3].r, m_color[3].g, m_color[3].b, 80));
+			m_colorButton[3].setColorBackground(sf::Color(0, 128, 128, 80));
 			break;
 		default:
 			break;
@@ -90,7 +90,8 @@ void ColorMenu::hoverMouse(const sf::Vector2i pos)
 void ColorMenu::handleButtonPress(const sf::Vector2i pos)
 {
 	int temp = checkButtonPress(pos);
-
+	ColorFloat colorTemp;
+	sf::Color  temporaryColor;
 
 	switch (temp) {
 		case 0b00000001:
@@ -124,9 +125,10 @@ void ColorMenu::handleButtonPress(const sf::Vector2i pos)
 		case 0b00010000:
 			if (--m_colorIndex[m_selectedBtn] < 0)
 				m_colorIndex[m_selectedBtn] = 12;
-			m_color[m_selectedBtn].r =  ColorRatio[(m_colorIndex[m_selectedBtn])].r*255;
-			m_color[m_selectedBtn].g =  ColorRatio[(m_colorIndex[m_selectedBtn])].g*255;
-			m_color[m_selectedBtn].b =  ColorRatio[(m_colorIndex[m_selectedBtn])].b*255;
+			colorTemp = ColorRatio[(m_colorIndex[m_selectedBtn])];
+			m_color[m_selectedBtn].r =  colorTemp.r*255;
+			m_color[m_selectedBtn].g =  colorTemp.g*255;
+			m_color[m_selectedBtn].b =  colorTemp.b*255;
 
 
 			m_colorButton[m_selectedBtn].setColorForeground(m_color[m_selectedBtn]);
@@ -138,9 +140,10 @@ void ColorMenu::handleButtonPress(const sf::Vector2i pos)
 			break;
 		case 0b01000000:
 			m_colorIndex[m_selectedBtn] = (m_colorIndex[m_selectedBtn] + 1) % 13;
-			m_color[m_selectedBtn].r =  ColorRatio[(m_colorIndex[m_selectedBtn])].r*255;
-			m_color[m_selectedBtn].g =  ColorRatio[(m_colorIndex[m_selectedBtn])].g*255;
-			m_color[m_selectedBtn].b =  ColorRatio[(m_colorIndex[m_selectedBtn])].b*255;
+			colorTemp = ColorRatio[(m_colorIndex[m_selectedBtn])];
+			m_color[m_selectedBtn].r =  colorTemp.r*255;
+			m_color[m_selectedBtn].g =  colorTemp.g*255;
+			m_color[m_selectedBtn].b =  colorTemp.b*255;
 
 			m_colorButton[m_selectedBtn].setColorForeground(m_color[m_selectedBtn]);
 
@@ -164,6 +167,17 @@ void ColorMenu::handleButtonPress(const sf::Vector2i pos)
 		for (int i = 0; i < 4; ++i)
 			if (i != m_selectedBtn)
 				m_colorButton[i].setColorBackground(m_color[i]);
+
+		temp = (m_colorIndex[m_selectedBtn]-1 < 0) ? 12 : m_colorIndex[m_selectedBtn]-1;
+		colorTemp = ColorRatio[temp];
+		m_arrwButton[0].setColorForeground(sf::Color(colorTemp.r*255, colorTemp.g*255, colorTemp.b*255));
+
+		colorTemp = ColorRatio[m_colorIndex[m_selectedBtn]];
+		m_arrwButton[3].setColorForeground(sf::Color((colorTemp.r*255+64), (colorTemp.g*255+64), (colorTemp.b*255+64)));
+
+		temp = (m_colorIndex[m_selectedBtn]+1) % 13;
+		colorTemp = ColorRatio[temp];
+		m_arrwButton[2].setColorForeground(sf::Color(colorTemp.r*255, colorTemp.g*255, colorTemp.b*255));
 	}
 
 }
