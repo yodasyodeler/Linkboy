@@ -11,11 +11,6 @@ MBC2::MBC2(const char* filename, uint8_t* bank0)
 			std::cerr << "Invalid MBC2 value: " << ios::hex << bank0[0x147];
 			exit(-1);
 	}
-	if (ExtRAM != nullptr) {
-		std::cerr << "Invalid MBC2 Ram \n";
-		exit(-2);
-	}
-	ExtRAM = new uint8_t[512];
 }		
 
 MBC2::~MBC2()

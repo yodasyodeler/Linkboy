@@ -18,25 +18,6 @@ MBC::MBC(const char* filename, const uint8_t* bank0)
 		exit(-1);
 	}
 
-	//Ram Savable
-	switch (bank0[0x147]) {
-		case 0x03:
-		case 0x06:
-		case 0x09:
-		case 0x0D:
-		case 0x0F:
-		case 0x10:
-		case 0x13:
-		case 0x17:
-		case 0x1B:
-		case 0x1E:
-		case 0x22:
-		case 0xFF:
-			m_saveBattery = true;
-			break;
-		default:
-			break;
-	}
 
 	//ROM Size, # Banks
 	switch (bank0[0x148]) {
@@ -96,6 +77,29 @@ MBC::MBC(const char* filename, const uint8_t* bank0)
 			std::cerr << "RAM size can not be determined, may not function correctly: " << std::hex << bank0[0x148] << std::endl;
 	}
 
+	//Ram Savable
+	switch (bank0[0x147]) {
+		case 0x06:
+		case 0x05:
+			ExtRAM = new uint8_t[512];
+			m_ramSize = 1;
+			m_ramCap = 512;
+		case 0x03:
+		case 0x09:
+		case 0x0D:
+		case 0x0F:
+		case 0x10:
+		case 0x13:
+		case 0x17:
+		case 0x1B:
+		case 0x1E:
+		case 0x22:
+		case 0xFF:
+			m_saveBattery = true;
+			break;
+		default:
+			break;
+	}
 
 	//Load Entire ROM
 	std::ifstream romfile(filename, ios::in | ios::binary);
