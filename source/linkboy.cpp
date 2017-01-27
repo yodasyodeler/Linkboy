@@ -71,6 +71,7 @@ void linkboy::startEmulation()
 
 			//max renders to 60fps
 			if (checkFrameTime()) {
+				m_display.updateColor();
 				renderScreen();
 				m_settings.framesPerSecond = m_framePerSecond;
 			}
@@ -87,7 +88,9 @@ void linkboy::handleSettings()
 			loadGame(m_settings.loadGameFile);
 			break;
 		case ChangeColor:
-			m_display.changeColor(m_settings.color);		
+			m_display.changeColor(m_settings.color);
+			m_display.updateColor();
+			renderScreen();		
 			break;
 		case ChangeSpeed:
 			if (m_client.getConnected() == false) {

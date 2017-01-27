@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "SFML/Network.hpp"
+#include "common.h"
 #include <iostream>
 
 enum settingOperation {
@@ -31,8 +32,7 @@ struct emulatorSettings {
 	bool pause;
 	bool displayHelp;
 	bool displayOptions;
-	int color;
-	//uint32_t color[4];
+	Color color[4];
 	int speed;
 	const char* loadGameFile;
 	double framesPerSecond;

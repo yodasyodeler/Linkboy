@@ -15,36 +15,10 @@ PPU::~PPU()
 	m_currentState = nullptr;
 }
 
-void PPU::changeColor(const int scheme)
+void PPU::changeColor(const Color color[4])
 {
-	m_color[0] = WHITE;
-	switch (scheme) {
-		case 2:
-			m_color[2] = LIGHTRED;
-			m_color[1] = DARKRED;
-			m_color[3] = BLACK;
-			break;
-		case 3:
-			m_color[2] = LIGHTGREEN;
-			m_color[1] = DARKGREEN;
-			m_color[3] = BLACK;
-			break;
-		case 4:
-			m_color[2] = LIGHTBLUE;
-			m_color[1] = DARKBLUE;
-			m_color[3] = BLACK;
-			break;
-		case 5:
-			m_color[0] = WHITEGB;
-			m_color[1] = LIGHTGB;
-			m_color[2] = DARKGB;
-			m_color[3] = BLACKGB;
-			break;
-		default:
-			m_color[1] = DARKGREY;
-			m_color[2] = LIGHTGREY;
-			m_color[3] = BLACK;
-	}
+	for (int i=0; i<4; ++i)
+		m_color[i] = color[i];
 }
 
 void PPU::advanceState(const int cycle)
@@ -87,12 +61,18 @@ void PPU::clearDisplay()
 {
 	for (int y = 0; y < 144; ++y)
 		for (int x = 0; x < 160; ++x)
-			m_buffer[y][x] = m_color[0];
+			m_colorIndex[y][x] = 0;
 }
 
 const uint32_t* PPU::getBuffer()
 {
 	return (const uint32_t*)m_buffer;
+}
+
+void PPU::updateColor() {
+	for (int y = 0; y < 144; ++y)
+		for (int x = 0; x < 160; ++x)
+			m_buffer[y][x] = m_color[m_colorIndex[y][x]];
 }
 
 bool PPU::isVBlank()
@@ -223,7 +203,7 @@ int PPU::readVRAM()
 
 		for (int i = posX & 0x7; i < endPoint1; ++i) {
 			colorOffset	= BGcolor[ (pixelData1 >> (7-i) & 0x1) | (((pixelData2 >> (7-i)) & 0x1) << 1) ];		//Grab Tile Color Pallet
-			m_buffer[line][pixel++] = m_color[colorOffset];												//Update Pixel
+			m_colorIndex[line][pixel++] = colorOffset;															//Update Pixel
 		}
 
 		
@@ -242,7 +222,7 @@ int PPU::readVRAM()
 
 			for (int i = 0; i < 8; ++i) {
 				colorOffset = BGcolor[(pixelData1 >> (7-i) & 0x1) | (((pixelData2 >> (7-i)) & 0x1) << 1)];		//Grab Tile Color Pallet
-				m_buffer[line][pixel++] = m_color[colorOffset];											//Update Pixel
+				m_colorIndex[line][pixel++] = colorOffset;											//Update Pixel
 			}
 		}
 			
@@ -261,7 +241,7 @@ int PPU::readVRAM()
 
 		for (int i = 0; i < endPoint2; ++i) {
 			colorOffset = BGcolor[ (pixelData1 >> (7-i) & 0x1) | (((pixelData2 >> (7-i)) & 0x1) << 1) ];		//Grab Tile Color Pallet
-			m_buffer[line][pixel++] = m_color[colorOffset];												//Update Pixel
+			m_colorIndex[line][pixel++] = colorOffset;												//Update Pixel
 		}
 		
 
@@ -286,7 +266,7 @@ int PPU::readVRAM()
 
 				for (int i = posX; i < 8; ++i) {
 					colorOffset = BGcolor[(pixelData1 >> (7-i) & 0x1) | (((pixelData2 >> (7-i)) & 0x1) << 1)];			//Grab Tile Color Pallet
-					m_buffer[line][pixel++] = m_color[colorOffset];												//Update Pixel
+					m_colorIndex[line][pixel++] = colorOffset;												//Update Pixel
 					++posX;
 				}
 			}
@@ -306,7 +286,7 @@ int PPU::readVRAM()
 
 				for (int i = 0; i < 8; ++i) {
 					colorOffset = BGcolor[ (pixelData1>>(7-i) & 0x1) | (((pixelData2>>(7-i)) & 0x1) << 1) ];		//Grab Tile Color Pallet
-					m_buffer[line][pixel++] = m_color[colorOffset];											//Update Pixel
+					m_colorIndex[line][pixel++] = colorOffset;											//Update Pixel
 					++posX;
 				}
 			}
@@ -324,7 +304,7 @@ int PPU::readVRAM()
 			int i = 0;
 			while (pixel < 160) {
 				colorOffset = BGcolor[ (pixelData1>>(7-i) & 0x1) | (((pixelData2>>(7-i)) & 0x1) << 1) ];			//Grab Tile Color Pallet
-				m_buffer[line][pixel++] = m_color[colorOffset];												//Update Pixel
+				m_colorIndex[line][pixel++] = colorOffset;												//Update Pixel
 				++i;
 				++posX;
 			}
@@ -431,19 +411,19 @@ int PPU::readVRAM()
 
 				if (sprites[i].flags & X_FLIP) {
 					for (int j = endPoint; j >= startPoint; --j) {
-						if (spritePriority || (m_buffer[line][(endPoint-j)+sprites[i].x].Val == m_color[BGcolor[0]].Val)) {
+						if (spritePriority || (m_colorIndex[line][(endPoint-j)+sprites[i].x] == BGcolor[0])) {
 							colorOffset = spriteColor[(((pixelData1 >> (7 - j)) & 0x1) | (((pixelData2 >> (7 - j)) & 0x1) << 1))];	//Grab Tile Color Pallet
 							if ( colorOffset != 0xFF)
-								m_buffer[line][(7-j)+sprites[i].x] = m_color[colorOffset];							//Update Pixel
+								m_colorIndex[line][(7-j)+sprites[i].x] = colorOffset;							//Update Pixel
 						}
 					}
 				}   
 				else {
 					for (int j = startPoint; j <= endPoint; ++j) {
-						if ( spritePriority || (m_buffer[line][ (j-startPoint)+sprites[i].x ].Val == m_color[BGcolor[0]].Val) ) {
+						if ( spritePriority || (m_colorIndex[line][ (j-startPoint)+sprites[i].x ] == BGcolor[0]) ) {
 							colorOffset = spriteColor[((pixelData1 >> (7 - j) & 0x1) | (((pixelData2 >> (7 - j)) & 0x1) << 1))];	//Grab Tile Color Pallet
 							if ( colorOffset != 0xFF) 
-								m_buffer[line][ (j-startPoint)+sprites[i].x ] = m_color[colorOffset];									//Update Pixel
+								m_colorIndex[line][ (j-startPoint)+sprites[i].x ] = colorOffset;									//Update Pixel
 						}
 					}
 				}

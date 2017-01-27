@@ -57,5 +57,5 @@ class linkboy {
 		double		m_framePerSecond	= 0;
 		double		m_frameCount		= 0;
 
-		emulatorSettings m_settings = {false, false, false, 1, 3, nullptr, 0.0, m_memory.JoyPad, NoOperation, {} };
+		emulatorSettings m_settings = {false, false, false, {}, 3, nullptr, 0.0, m_memory.JoyPad, NoOperation, {} };
 };

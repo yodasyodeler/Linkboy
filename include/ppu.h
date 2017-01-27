@@ -2,7 +2,6 @@
 #include "mmu.h"
 #include "common.h"
 
-
 struct spriteData {
 	int16_t y;
 	int16_t x;
@@ -22,10 +21,11 @@ class PPU {
 		PPU(MMU* memory);
 		~PPU();
 
-		void				changeColor(const int scheme);
+		void				changeColor(const Color color[4]);
 
 		void				advanceState(const int cycle);
 		void				clearDisplay(); 
+		void 				updateColor();
 
 		const uint32_t*		getBuffer();
 		bool				isVBlank();
@@ -52,6 +52,7 @@ class PPU {
 		//Display Buffer
 		Color	m_color[4];
 		Color	m_buffer[144][160];
+		uint8_t m_colorIndex[144][160];
 
 		const Color WHITE		= {0xFFFFFFFF};
 		const Color DARKGREY	= {0xFF909090};

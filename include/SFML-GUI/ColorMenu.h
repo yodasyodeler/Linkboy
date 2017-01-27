@@ -19,7 +19,7 @@ class ColorMenu : public sf::Drawable, public sf::Transformable
 
 		void hoverMouse(const sf::Vector2i pos);
 
-		void handleButtonPress(const sf::Vector2i pos);
+		bool handleButtonPress(const sf::Vector2i pos);
 
 		sf::Color getColor(int color);
 

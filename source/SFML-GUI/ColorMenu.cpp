@@ -9,27 +9,11 @@ const float ColorMenu::ColorValues[22][2] = {
 };
 
 const float ColorMenu::GreyScale[22] = {
-	1.0, 
-	0.95, 
-	0.9,  
-	0.85, 
-	0.8,  
-	0.75, 
-	0.7, 
-	0.65, 
-	0.6,  
-	0.55, 
-	0.5,  
-	0.45, 
-	0.4,  
-	0.35, 
-	0.3,  
-	0.25, 
-	0.2, 
-	0.15, 
-	0.1,  
-	0.05, 
-	0.0,
+	1.0,  0.95, 0.9,  0.85, 0.8,  
+	0.75, 0.7,  0.65, 0.6,  0.55, 
+	0.5,  0.45, 0.4,  0.35, 0.3,
+	0.25, 0.2,  0.15, 0.1,  0.05,
+	0.0,	
 	1.0  
 };
 
@@ -39,10 +23,18 @@ ColorMenu::ColorMenu()
 	m_border.setSize({ 320, 60  });
 	m_border.setColorForeground(sf::Color(0xCCCCCCFF));
 
-	m_color[0] = sf::Color::Red;
-	m_color[1] = sf::Color::Blue;
-	m_color[2] = sf::Color::Green;
-	m_color[3] = sf::Color::Black;
+	m_color[0] = sf::Color(0xFFFFFFFF);
+	m_color[1] = sf::Color(0x909090FF);
+	m_color[2] = sf::Color(0x404040FF);
+	m_color[3] = sf::Color(0x000000FF);
+
+	for (int i=0; i<4; ++i) 
+		m_hue[i] = 360;
+	
+	m_satValIndex[0] = 21;
+	m_satValIndex[1] = 17;	
+	m_satValIndex[2] = 13;	
+	m_satValIndex[3] = 0;
 
 	for (int i = 0; i < 4; ++i) {
 		m_colorButton[i].setPos({ (float)(10+(80*i)), (float)(288-60+10) });
@@ -52,6 +44,8 @@ ColorMenu::ColorMenu()
 		m_colorButton[i].setColorBackground(m_color[i]);
 		m_arrwButton[i].setColorForeground(m_color[i]);
 		m_arrwButton[i].setSize({ (float)ArrowBtn, (float)ArrowBtn });
+		m_arrwButton[i].setPadding(1);
+		m_arrwButton[i].setColorBackground(sf::Color(0, 128, 128, 80));
 	}
 
 
@@ -112,10 +106,11 @@ void ColorMenu::hoverMouse(const sf::Vector2i pos)
 	}
 }
 
-void ColorMenu::handleButtonPress(const sf::Vector2i pos)
+bool ColorMenu::handleButtonPress(const sf::Vector2i pos)
 {
 	int temp = checkButtonPress(pos);
 	sf::Color  tempColor;
+	bool re = true;
 
 	if (temp) {
 		switch (temp) {
@@ -229,6 +224,10 @@ void ColorMenu::handleButtonPress(const sf::Vector2i pos)
 					m_colorButton[i].setColorBackground(m_color[i]);
 		}
 	}
+	else 
+		re = false;
+
+	 return re;
 }
 
 sf::Color ColorMenu::getColor(int color)

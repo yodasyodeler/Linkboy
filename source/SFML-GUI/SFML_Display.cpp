@@ -246,26 +246,26 @@ void handleGame(const sf::Event& event, emulatorSettings& settings)
 				renderScreen();
 			}
 
-			if (event.key.code == Keyboard::F1) {
-				settings.color = 1;
-				settings.operation = ChangeColor;
-			}
-			if (event.key.code == Keyboard::F2) {
-				settings.color = 2;
-				settings.operation = ChangeColor;
-			}
-			if (event.key.code == Keyboard::F3) {
-				settings.color = 3;
-				settings.operation = ChangeColor;
-			}
-			if (event.key.code == Keyboard::F4) {
-				settings.color = 4;
-				settings.operation = ChangeColor;
-			}
-			if (event.key.code == Keyboard::F5) {
-				settings.color = 5;
-				settings.operation = ChangeColor;
-			}
+			// if (event.key.code == Keyboard::F1) {
+			// 	settings.color = 1;
+			// 	settings.operation = ChangeColor;
+			// }
+			// if (event.key.code == Keyboard::F2) {
+			// 	settings.color = 2;
+			// 	settings.operation = ChangeColor;
+			// }
+			// if (event.key.code == Keyboard::F3) {
+			// 	settings.color = 3;
+			// 	settings.operation = ChangeColor;
+			// }
+			// if (event.key.code == Keyboard::F4) {
+			// 	settings.color = 4;
+			// 	settings.operation = ChangeColor;
+			// }
+			// if (event.key.code == Keyboard::F5) {
+			// 	settings.color = 5;
+			// 	settings.operation = ChangeColor;
+			// }
 			if (event.key.code == Keyboard::Num9) {
 				showHelp ^= 1;
 				helpMenu.setVisible(showHelp);
@@ -330,7 +330,7 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings)
 			if (event.key.code == DOWN) {
 				mainMenu.displayMainMenu(false);
 				colorMenu.displayColorMenu(true);
-				background.setVisible(true);
+				background.setVisible(false);
 				eventState = handleColor;
 				renderScreen();
 			}
@@ -392,7 +392,7 @@ void handleMenu(const sf::Event& event, emulatorSettings& settings)
 					case 0b1000:
 						mainMenu.displayMainMenu(false);
 						colorMenu.displayColorMenu(true);
-						background.setVisible(true);
+						background.setVisible(false);
 						eventState = handleColor;
 						renderScreen();
 						break;
@@ -811,6 +811,7 @@ void handleColor(const sf::Event& event, emulatorSettings& settings)
 				if (event.key.code == MENU) {
 					mainMenu.displayMainMenu(true);
 					colorMenu.displayColorMenu(false);
+					background.setVisible(true);
 					changeKey = false;
 					eventState = handleMenu;
 				}
@@ -818,8 +819,21 @@ void handleColor(const sf::Event& event, emulatorSettings& settings)
 				renderScreen();
 			break;
 		case sf::Event::MouseButtonReleased:
-			colorMenu.handleButtonPress(sf::Mouse::getPosition(window));
-			renderScreen();
+			if (colorMenu.handleButtonPress(sf::Mouse::getPosition(window))) {
+				sf::Color temp;
+				for (int i=0; i<4; ++i) {
+					temp = colorMenu.getColor(i);
+					settings.color[i].Red = temp.r;
+					settings.color[i].Green = temp.g;
+					settings.color[i].Blue = temp.b;
+					settings.color[i].Alpha = 0xFF;
+
+					std::cout << " R: " << (int)settings.color[i].Red << " G: " << (int)settings.color[i].Green << " B: " <<(int)settings.color[i].Blue << " A: " << (int) (int)settings.color[i].Alpha <<
+					"\ncolor value: " << (int)settings.color[i].Val <<"\n\n";
+				}
+				settings.operation = ChangeColor;
+				renderScreen();
+			}
 			break;
 		case sf::Event::MouseMoved:
 			colorMenu.hoverMouse(sf::Mouse::getPosition(window));
