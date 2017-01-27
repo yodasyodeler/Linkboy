@@ -4,7 +4,8 @@
 class ColorMenu : public sf::Drawable, public sf::Transformable
 {
 	static const int ArrowBtn = 20; 
-	static const float ColorValues[21][2];
+	static const float ColorValues[22][2];
+	static const float GreyScale[22];
 
 	public:
 		ColorMenu();

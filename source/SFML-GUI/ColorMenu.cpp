@@ -1,11 +1,36 @@
 #include "SFML-GUI/ColorMenu.h"
 
-const float ColorMenu::ColorValues[21][2] = {
+const float ColorMenu::ColorValues[22][2] = {
 	{1.0,0.0}, {1.0,0.1}, {1.0,0.2}, {1.0,0.3}, {1.0,0.4},
 	{1.0,0.5}, {1.0,0.6}, {1.0,0.7}, {1.0,0.8}, {1.0,0.9},
 	{1.0,1.0}, {0.9,1.0}, {0.8,1.0}, {0.7,1.0}, {0.6,1.0},
 	{0.5,1.0}, {0.4,1.0}, {0.3,1.0}, {0.2,1.0}, {0.1,1.0},
-	{0.0,1.0}
+	{0.0,1.0}, {1.0, 0.0}
+};
+
+const float ColorMenu::GreyScale[22] = {
+	1.0, 
+	0.95, 
+	0.9,  
+	0.85, 
+	0.8,  
+	0.75, 
+	0.7, 
+	0.65, 
+	0.6,  
+	0.55, 
+	0.5,  
+	0.45, 
+	0.4,  
+	0.35, 
+	0.3,  
+	0.25, 
+	0.2, 
+	0.15, 
+	0.1,  
+	0.05, 
+	0.0,
+	1.0  
 };
 
 ColorMenu::ColorMenu()
@@ -129,16 +154,15 @@ void ColorMenu::handleButtonPress(const sf::Vector2i pos)
 
 			break;
 		case 0b00100000:
-			//m_arrwButton[1].setColorForeground();
-
+			m_satValIndex[m_selectedBtn] -= 1;
+			if (m_satValIndex[m_selectedBtn] < 0)
+				m_satValIndex[m_selectedBtn] = 20;
 			break;
 		case 0b01000000:
 			m_hue[m_selectedBtn] = (10 + m_hue[m_selectedBtn]) % 370;
-
 			break;
 		case 0b10000000:
-			//m_arrwButton[3].setColorForeground();
-
+			m_satValIndex[m_selectedBtn] = (m_satValIndex[m_selectedBtn]+1) % 21;
 			break;
 		default:
 			break;
@@ -152,11 +176,9 @@ void ColorMenu::handleButtonPress(const sf::Vector2i pos)
 				m_arrwButton[3].setPos({ (float)(10 + (m_selectedBtn * 80) + ArrowBtn), (float)(288 - 60 - ArrowBtn * 3) });
 			}
 
-			
-
 			//set current button
 			if (m_hue[m_selectedBtn] == 360) {
-				m_color[m_selectedBtn] = convertColor(0, 0, ColorValues[m_satValIndex[m_selectedBtn]][0]);
+				m_color[m_selectedBtn] = convertColor(0, 0, GreyScale[m_satValIndex[m_selectedBtn]]);
 			}
 			else {
 				m_color[m_selectedBtn] = convertColor(m_hue[m_selectedBtn], ColorValues[m_satValIndex[m_selectedBtn]][1], ColorValues[m_satValIndex[m_selectedBtn]][0]);
@@ -164,20 +186,44 @@ void ColorMenu::handleButtonPress(const sf::Vector2i pos)
 
 			m_colorButton[m_selectedBtn].setColorForeground(m_color[m_selectedBtn]);
 
+			//Hue Left
 			if (m_hue[m_selectedBtn]+10 == 360) {
-				m_arrwButton[2].setColorForeground( convertColor(0, 0, ColorValues[m_satValIndex[m_selectedBtn]][0]) );
+				m_arrwButton[2].setColorForeground( convertColor(0, 0, GreyScale[m_satValIndex[m_selectedBtn]]) );
 			}
 			else {
 				m_arrwButton[2].setColorForeground( convertColor(m_hue[m_selectedBtn]+10, ColorValues[m_satValIndex[m_selectedBtn]][1], ColorValues[m_satValIndex[m_selectedBtn]][0]) );
 			}
 
+			//Hue Right
 			if (m_hue[m_selectedBtn]-10 < 0) {
-				m_arrwButton[0].setColorForeground( convertColor(0, 0, ColorValues[m_satValIndex[m_selectedBtn]][0]) );
+				m_arrwButton[0].setColorForeground( convertColor(0, 0, GreyScale[m_satValIndex[m_selectedBtn]]) );
 			}
 			else {
 				m_arrwButton[0].setColorForeground( convertColor(m_hue[m_selectedBtn]-10, ColorValues[m_satValIndex[m_selectedBtn]][1], ColorValues[m_satValIndex[m_selectedBtn]][0]) );
 			}
 
+
+			//Turn satBright Down
+			temp = m_satValIndex[m_selectedBtn]-1;	
+			temp = (temp < 0) ? 20 : temp;		
+			if (m_hue[m_selectedBtn] == 360) {
+				m_arrwButton[1].setColorForeground( convertColor(0, 0, GreyScale[temp]) );
+			}
+			else {
+				m_arrwButton[1].setColorForeground( convertColor(m_hue[m_selectedBtn], ColorValues[temp][1], ColorValues[temp][0]) );
+			}
+
+
+			//Turn satBright Up
+			if (m_hue[m_selectedBtn] == 360) {
+				m_arrwButton[3].setColorForeground( convertColor(0, 0, GreyScale[m_satValIndex[m_selectedBtn]+1]) );
+			}
+			else {
+				m_arrwButton[3].setColorForeground( convertColor(m_hue[m_selectedBtn], ColorValues[m_satValIndex[m_selectedBtn]+1][1], ColorValues[m_satValIndex[m_selectedBtn]+1][0]) );
+			}
+
+
+			//Btn backgrounds
 			for (int i = 0; i < 4; ++i)
 				if (i != m_selectedBtn)
 					m_colorButton[i].setColorBackground(m_color[i]);
