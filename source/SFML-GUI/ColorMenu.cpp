@@ -13,8 +13,7 @@ const float ColorMenu::GreyScale[22] = {
 	0.75, 0.7,  0.65, 0.6,  0.55, 
 	0.5,  0.45, 0.4,  0.35, 0.3,
 	0.25, 0.2,  0.15, 0.1,  0.05,
-	0.0,	
-	1.0  
+	0.0,  1.0  
 };
 
 ColorMenu::ColorMenu()
@@ -31,10 +30,10 @@ ColorMenu::ColorMenu()
 	for (int i=0; i<4; ++i) 
 		m_hue[i] = 360;
 	
-	m_satValIndex[0] = 21;
+	m_satValIndex[0] = 0;
 	m_satValIndex[1] = 17;	
 	m_satValIndex[2] = 13;	
-	m_satValIndex[3] = 0;
+	m_satValIndex[3] = 20;
 
 	for (int i = 0; i < 4; ++i) {
 		m_colorButton[i].setPos({ (float)(10+(80*i)), (float)(288-60+10) });

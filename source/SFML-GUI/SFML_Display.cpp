@@ -825,7 +825,9 @@ void handleColor(const sf::Event& event, emulatorSettings& settings)
 					temp = colorMenu.getColor(i);
 					settings.color[i].Red = temp.r;
 					settings.color[i].Green = temp.g;
-					settings.color[i].Blue = temp.b;				}
+					settings.color[i].Blue = temp.b;				
+					settings.color[i].Alpha = 0xFF;
+				}
 				settings.operation = ChangeColor;
 				renderScreen();
 			}
