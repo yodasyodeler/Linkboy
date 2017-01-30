@@ -301,9 +301,9 @@ const sf::Color ColorMenu::convertColor(int hue, float saturation, float brightn
 		}
 	}
 
-	red = (uint8_t)(R+M)*255;
-	green = (uint8_t)(G+M)*255;
-	blue = (uint8_t)(B+M)*255;
+	red = (R+M)*255;
+	green = (G+M)*255;
+	blue = (B+M)*255;
 
 	return sf::Color(red, green, blue);
 }
