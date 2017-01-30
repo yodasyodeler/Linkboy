@@ -1,19 +1,19 @@
 #include "SFML-GUI/ColorMenu.h"
 
 const float ColorMenu::ColorValues[22][2] = {
-	{1.0,0.0}, {1.0,0.1}, {1.0,0.2}, {1.0,0.3}, {1.0,0.4},
-	{1.0,0.5}, {1.0,0.6}, {1.0,0.7}, {1.0,0.8}, {1.0,0.9},
-	{1.0,1.0}, {0.9,1.0}, {0.8,1.0}, {0.7,1.0}, {0.6,1.0},
-	{0.5,1.0}, {0.4,1.0}, {0.3,1.0}, {0.2,1.0}, {0.1,1.0},
-	{0.0,1.0}, {1.0, 0.0}
+	{1.0f,0.0f}, {1.0f,0.1f}, {1.0f,0.2f}, {1.0f,0.3f}, {1.0f,0.4f},
+	{1.0f,0.5f}, {1.0f,0.6f}, {1.0f,0.7f}, {1.0f,0.8f}, {1.0f,0.9f},
+	{1.0f,1.0f}, {0.9f,1.0f}, {0.8f,1.0f}, {0.7f,1.0f}, {0.6f,1.0f},
+	{0.5f,1.0f}, {0.4f,1.0f}, {0.3f,1.0f}, {0.2f,1.0f}, {0.1f,1.0f},
+	{0.0f,1.0f}, {1.0f,0.0f}
 };
 
 const float ColorMenu::GreyScale[22] = {
-	1.0,  0.95, 0.9,  0.85, 0.8,  
-	0.75, 0.7,  0.65, 0.6,  0.55, 
-	0.5,  0.45, 0.4,  0.35, 0.3,
-	0.25, 0.2,  0.15, 0.1,  0.05,
-	0.0,  1.0  
+	1.0f,  0.95f, 0.9f,  0.85f, 0.8f,  
+	0.75f, 0.7f,  0.65f, 0.6f,  0.55f, 
+	0.5f,  0.45f, 0.4f,  0.35f, 0.3f,
+	0.25f, 0.2f,  0.15f, 0.1f,  0.05f,
+	0.0f,  1.0f 
 };
 
 ColorMenu::ColorMenu()
@@ -31,8 +31,8 @@ ColorMenu::ColorMenu()
 		m_hue[i] = 360;
 	
 	m_satValIndex[0] = 0;
-	m_satValIndex[1] = 17;	
-	m_satValIndex[2] = 13;	
+	m_satValIndex[1] = 14;	
+	m_satValIndex[2] = 17;	
 	m_satValIndex[3] = 20;
 
 	for (int i = 0; i < 4; ++i) {
@@ -301,9 +301,9 @@ const sf::Color ColorMenu::convertColor(int hue, float saturation, float brightn
 		}
 	}
 
-	red = (R+M)*255;
-	green = (G+M)*255;
-	blue = (B+M)*255;
+	red = (uint8_t)(R+M)*255;
+	green = (uint8_t)(G+M)*255;
+	blue = (uint8_t)(B+M)*255;
 
 	return sf::Color(red, green, blue);
 }

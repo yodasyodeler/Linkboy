@@ -236,13 +236,14 @@ bool Server::createLobby(const char* gameName, const int index)
 
 		Lobby lob = {{},1};
 		lb_strcpy(lob.gameName, m_message.game);		
-		tempLobby = new Lobby[m_lobbyCount++];
+		tempLobby = new Lobby[m_lobbyCount];
 		for (int i=0; i<m_lobbyCount; ++i)
 			tempLobby[i] = m_lobbyList[i];
 		delete [] m_lobbyList;
 		m_lobbyList = tempLobby;
 
-		m_lobbyList[m_lobbyCount-1] = lob;
+		m_lobbyList[m_lobbyCount] = lob;
+		m_lobbyCount++;
 	}
 	else
 		m_message.success = false;

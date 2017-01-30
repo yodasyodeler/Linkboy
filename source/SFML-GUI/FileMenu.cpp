@@ -5,7 +5,7 @@ FileMenu::FileMenu(const char* dirName)
 	for (int i = 0; i < 8; ++i) {
 		fileSelectBtn[i].setText("FileTest");
 		fileSelectBtn[i].setPadding(2);
-		fileSelectBtn[i].setColorForeground(sf::Color::Green);
+		fileSelectBtn[i].setColorForeground(sf::Color(0xCCCCCCFF));
 		fileSelectBtn[i].setColorBackground(sf::Color::Transparent);
 		fileSelectBtn[i].setTextColor(sf::Color::White);
 		fileSelectBtn[i].setSize({ 280,36 });
@@ -23,7 +23,7 @@ FileMenu::FileMenu(const sf::Font & font, const char* dirName)
 		fileSelectBtn[i].setFont(font);
 		fileSelectBtn[i].setText("FileTest");
 		fileSelectBtn[i].setPadding(2);
-		fileSelectBtn[i].setColorForeground(sf::Color::Green);
+		fileSelectBtn[i].setColorForeground(sf::Color(0xCCCCCCFF));
 		fileSelectBtn[i].setColorBackground(sf::Color::Transparent);
 		fileSelectBtn[i].setTextColor(sf::Color::White);
 		fileSelectBtn[i].setSize({ 280,36 });

@@ -736,6 +736,7 @@ void handleControl(const sf::Event& event, emulatorSettings& settings)
 				controlMenu.displayControlMenu(false);
 				changeKey = false;
 				eventState = handleMenu;
+				renderScreen();
 			}
 			else if (changeKey) {
 				switch (controlMenu.setKey(event.key.code)) {
@@ -777,8 +778,6 @@ void handleControl(const sf::Event& event, emulatorSettings& settings)
 						break;
 					default:
 						break;
-
-
 				}
 				changeKey = false;
 				renderScreen();

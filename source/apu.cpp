@@ -242,7 +242,8 @@ void APU::advanceSound(const int cycle)
 			if (m_sample_index >= SAMPLES) {
 				m_sample_index = 0;
 
-				m_ch1_buffer.loadFromSamples(m_ch1_raw, SAMPLES, 1, SAMPLERATE);
+				//Sound WIP
+				/*m_ch1_buffer.loadFromSamples(m_ch1_raw, SAMPLES, 1, SAMPLERATE);
 				m_ch1_sound.play();
 
 				m_ch2_buffer.loadFromSamples(m_ch2_raw, SAMPLES, 1, SAMPLERATE);
@@ -252,7 +253,7 @@ void APU::advanceSound(const int cycle)
 				m_ch3_sound.play();
 
 				m_ch4_buffer.loadFromSamples(m_ch4_raw, SAMPLES, 1, SAMPLERATE);
-				m_ch4_sound.play();
+				m_ch4_sound.play();*/
 			}
 		}
 	}

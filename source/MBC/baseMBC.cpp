@@ -141,7 +141,6 @@ MBC::~MBC()
 	swRom = nullptr;
 }
 
-
 void MBC::updateMBC(const uint16_t address, uint8_t data)
 {}
 

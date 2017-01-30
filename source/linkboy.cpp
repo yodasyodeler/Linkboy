@@ -110,6 +110,8 @@ void linkboy::handleSettings()
 					changeSpeed(3);
 					m_sound.changeSpeed(3);
 					//m_client.readLobby(0);
+					if (m_client.joinLobby(0) == false) 
+						m_client.createLobby();
 				}
 			} 
 			break;
@@ -205,11 +207,16 @@ bool linkboy::checkFrameTime()
 void linkboy::saveState()
 {
 	uint32_t offset;
-
+	
 	if (m_saveState != nullptr) {
-		offset = m_memory.saveToFile(m_saveState, 0);
-		offset = m_cpu.saveToFile(m_saveState, offset);
-		m_timer.saveToFile(m_saveState, offset);
+		std::ifstream file(m_saveState, ios::out | ios::trunc);
+
+		if (file.is_open()) {
+			file.close();
+			offset = m_memory.saveToFile(m_saveState, 0);
+			offset = m_cpu.saveToFile(m_saveState, offset);
+			m_timer.saveToFile(m_saveState, offset);
+		}
 	}
 }
 

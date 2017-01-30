@@ -99,7 +99,7 @@ uint32_t timer::saveToFile(const char * filename, const uint32_t offset)
 		file.close();
 	}
 
-	return offset + sizeof(bool)*1 + sizeof(int)*3;
+	return offset + sizeof(bool) + sizeof(int)*3;
 }
 
 uint32_t timer::loadFromFile(const char * filename, const uint32_t offset)
