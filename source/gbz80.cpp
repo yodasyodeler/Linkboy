@@ -742,6 +742,13 @@ int gbz80::processInterrupt()
 			_enableInterrupt = false;
 			_memory->mmIO[IF] &= ~(1 << i);
 			re = 5;
+
+			enableInterrupt = false;
+			m_memory->mmIO[IF] &= ~(1 << i);
+			if (m_halt)
+				re = 6;
+			else
+			    re = 5;
 		}
 	}
 
