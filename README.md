@@ -32,7 +32,7 @@ Above is Pokemon Blue trading & Tetris 2-player
    <img src="https://cloud.githubusercontent.com/assets/9373330/19225265/94bf36ac-8e4d-11e6-9d99-a564afbd2107.png" width="260" height="234" />   
 
 
-Colors are changed during runtime with F1-F5 keys
+Colors are changed from within the GUI
 
 
 ##Controls
@@ -44,8 +44,6 @@ Colors are changed during runtime with F1-F5 keys
 
 &nbsp;&nbsp;Arrow Keys - D-Pad
 
-&nbsp;&nbsp;F1-F5 - Swap Palette   
-
 &nbsp;&nbsp;'-' - Slow Down      
 &nbsp;&nbsp;'+' - Speed Up   
 
@@ -55,6 +53,7 @@ Colors are changed during runtime with F1-F5 keys
 ## Currently Supports: 
 &nbsp;&nbsp;no MBC   
 &nbsp;&nbsp;MBC1   
+&nbsp;&nbsp;MBC2
 &nbsp;&nbsp;MBC3 (RTC not inplace)   
 
 ## Setup

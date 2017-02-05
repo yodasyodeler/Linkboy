@@ -71,7 +71,7 @@ class Server {
 
 		bool removeUser(const int index);
 
-		bool Server::removeLobby(const int index);
+		bool removeLobby(const int index);
 
 		bool pollGameLobby(const Player& player, const int lobby);
 

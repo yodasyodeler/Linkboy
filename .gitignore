@@ -269,3 +269,5 @@ __pycache__/
 
 #unix
 *.o
+linkboy-Server/*.o
+linkboy-Server/linkboyServer
