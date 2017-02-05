@@ -11,26 +11,47 @@ struct opFlag {
 };
 
 class gbz80{
+	enum flags { NZero, Zero, NCarry, Carry };
+
+	static const uint16_t ZEROFLAG		= 0x80;
+	static const uint16_t SUBTRACTFLAG	= 0x40;
+	static const uint16_t HALFCARRYFLAG = 0x20;
+	static const uint16_t CARRYFLAG		= 0x10;
+
 	public:
-		gbz80(MMU* memory);
-		gbz80(MMU* memory, BaseLogger* log);
+		gbz80(MMU* memory, BaseLogger* log = nullptr);
 
 		void loadGame();
 
 		int advanceCPU();
 		int processInterrupt();
 
+		uint32_t saveToFile(const char* filename, const uint32_t offset);
+		uint32_t loadFromFile(const char* filename, const uint32_t offset);
+		
 		//getters
 		bool getHalt();
 		int getPC();
 
-		uint32_t saveToFile(const char* filename, const uint32_t offset);
-		uint32_t loadFromFile(const char* filename, const uint32_t offset);
 
 	private:
-		enum flags { NZero, Zero, NCarry, Carry };
+		//Variables
+		bool	_enableInterrupt	=		false;
 
-		//Instructions
+		bool	_disableNext		=		false;
+		bool	_enableNext			=		false;
+
+		bool	_halt				=		false;
+		bool	_stop				=		false;
+
+		regset _reg					=		{};
+		uint8_t _opcodeIndex;
+		uint8_t _opcodeCycle;
+
+		MMU* _memory;
+
+		BaseLogger* _log			=		nullptr;		
+
 		void ldReg8(uint8_t& dest, const uint8_t src);
 		void ldReg16(uint16_t& dest, const uint16_t src);
 
@@ -124,28 +145,6 @@ class gbz80{
 		inline uint8_t readHalfCarryFlag(const uint8_t flag)	{ return (flag&0x20) != 0; }
 		inline uint8_t readCarryFlag(const uint8_t flag)		{ return (flag&0x10) != 0; }
 
-		//Variables
-		bool	enableInterrupt		=		false;
-
-		bool	disableNext			=		false;
-		bool	enableNext			=		false;
-
-		bool	m_halt				=		false;
-		bool	m_stop				=		false;
-
-		regset reg					=		{};
-		uint8_t opcodeIndex;
-		uint8_t m_opcodeCycle;
-
-		MMU* m_memory;
-
-		BaseLogger* m_log			=		nullptr;	
-
-		//Const
-		static const uint16_t zeroFlag		= 0x80;
-		static const uint16_t subtractFlag	= 0x40;
-		static const uint16_t halfCarryFlag = 0x20;
-		static const uint16_t carryFlag		= 0x10;
 };
 
 

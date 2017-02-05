@@ -4,35 +4,23 @@ bool expectingMessage = false;
 
 const double linkboy::gbperiod = (1000000 / 59.7);
 
-linkboy::linkboy(const char* dirName, const char* filename)
-	:m_memory(filename), m_cpu(&m_memory), m_display(&m_memory), 
-	 m_sound(&m_memory), m_timer(&m_memory), m_clock(),
-	m_frameInterval(sf::microseconds((uint32_t)gbperiod))
-{
-	frameTime		= m_clock.getElapsedTime();
-	m_frameInterval = sf::microseconds((uint32_t)gbperiod);
 
-	loadGame(filename);
-	initScreen(160*2, 144*2, m_display.getBuffer(), dirName);
-}
-
-linkboy::linkboy(BaseLogger* log, const char* dirName, const char* filename)
-	:m_memory(filename), m_cpu(&m_memory, log), m_display(&m_memory), 
-	m_sound(&m_memory), m_timer(&m_memory), m_clock(),
-	m_frameInterval(sf::microseconds((uint32_t)gbperiod))
+linkboy::linkboy( const char* dirName, const char* filename, BaseLogger* log)
+	:_memory(filename), _cpu(&_memory, log), _display(&_memory), 
+	_sound(&_memory), _timer(&_memory), _clock(),
+	_frameInterval(sf::microseconds((uint32_t)gbperiod))
 {
-	frameTime		= m_clock.getElapsedTime();
+	_frameTime		= _clock.getElapsedTime();
 	
 
-
 	loadGame(filename);
-	initScreen(160*2, 144*2, m_display.getBuffer(), dirName);
+	initScreen(160*2, 144*2, _display.getBuffer(), dirName);
 }
 
 linkboy::~linkboy()
 {
-	delete [] m_saveState;
-	m_saveState = nullptr;
+	delete [] _saveState;
+	_saveState = nullptr;
 }
 
 void linkboy::startEmulation()
@@ -41,39 +29,39 @@ void linkboy::startEmulation()
 	bool	quit		=	false;
 
 	while (!quit) {
-		quit = handleEvents(m_settings);			//Handle Events
+		quit = handleEvents(_settings);			//Handle Events
 		handleSettings();
 
 		//CPU Step
-		if ( !m_settings.pause && checkTime()) 
+		if ( !_settings.pause && checkTime()) 
 		{
 			do {
 				//checkDebug();
 
-				m_timer.advanceTimer(CPUCycle);
-				m_sound.advanceSound(CPUCycle);
-				m_display.advanceState(CPUCycle);
+				_timer.advanceTimer(CPUCycle);
+				_sound.advanceSound(CPUCycle);
+				_display.advanceState(CPUCycle);
 				//link cable
 				handleNetwork();
 
-				if (!m_cpu.getHalt())
-					CPUCycle = (m_cpu.advanceCPU()*4);
+				if (!_cpu.getHalt())
+					CPUCycle = (_cpu.advanceCPU()*4);
 				else 
 					CPUCycle = 1;
 				
-				m_memory.checkJoyPadPress();
-				CPUCycle += (m_cpu.processInterrupt()*4);
+				_memory.checkJoyPadPress();
+				CPUCycle += (_cpu.processInterrupt()*4);
 
-			} while ( !m_display.isVBlank() && !m_settings.pause);
+			} while ( !_display.isVBlank() && !_settings.pause);
 			
-			if ( m_display.isDisplayOn() == false )
-				m_display.clearDisplay();
+			if ( _display.isDisplayOn() == false )
+				_display.clearDisplay();
 
 			//max renders to 60fps
 			if (checkFrameTime()) {
-				m_display.updateColor();
+				_display.updateColor();
 				renderScreen();
-				m_settings.framesPerSecond = m_framePerSecond;
+				_settings.framesPerSecond = _framePerSecond;
 			}
 		}
 	}
@@ -81,21 +69,21 @@ void linkboy::startEmulation()
 
 void linkboy::handleSettings()
 {
-	switch (m_settings.operation) {
+	switch (_settings.operation) {
 		case NoOperation:
 			break;
 		case LoadGame:
-			loadGame(m_settings.loadGameFile);
+			loadGame(_settings.loadGameFile);
 			break;
 		case ChangeColor:
-			m_display.changeColor(m_settings.color);
-			m_display.updateColor();
+			_display.changeColor(_settings.color);
+			_display.updateColor();
 			renderScreen();		
 			break;
 		case ChangeSpeed:
-			if (m_client.getConnected() == false) {
-				changeSpeed(m_settings.speed);
-				m_sound.changeSpeed(m_settings.speed);
+			if (_client.getConnected() == false) {
+				changeSpeed(_settings.speed);
+				_sound.changeSpeed(_settings.speed);
 			}
 			break;
 		case SaveGameState:
@@ -105,25 +93,25 @@ void linkboy::handleSettings()
 			loadState();			
 			break;
 		case ConnectToServer:
-			if (m_client.getConnected() == false) {
-				if (m_client.joinServer(m_settings.network.ip, m_settings.network.port, m_settings.network.name) ) {
+			if (_client.getConnected() == false) {
+				if (_client.joinServer(_settings.network.ip, _settings.network.port, _settings.network.name) ) {
 					changeSpeed(3);
-					m_sound.changeSpeed(3);
-					//m_client.readLobby(0);
-					if (m_client.joinLobby(0) == false) 
-						m_client.createLobby();
+					_sound.changeSpeed(3);
+					//_client.readLobby(0);
+					if (_client.joinLobby(0) == false) 
+						_client.createLobby();
 				}
 			} 
 			break;
 		case ReadLobby:
-			if (m_client.getConnected() == true) {
+			if (_client.getConnected() == true) {
 				for (int i=0; i<0; ++i)
-					m_settings.lobby.lobbyName[i] = m_client.readLobby(i);
+					_settings.lobby.lobbyName[i] = _client.readLobby(i);
 				
 			}
 			break;
 		case JoinLobby:
-			if (m_client.getConnected() == true) {
+			if (_client.getConnected() == true) {
 
 			}
 			break;
@@ -137,40 +125,40 @@ void linkboy::changeSpeed(const int speed)
 {
 	switch (speed) {
 	case 0:
-		m_frameInterval	= sf::microseconds((uint32_t)(gbperiod*4));
+		_frameInterval	= sf::microseconds((uint32_t)(gbperiod*4));
 		break;
 	case 1:
-		m_frameInterval = sf::microseconds((uint32_t)(gbperiod*2));
+		_frameInterval = sf::microseconds((uint32_t)(gbperiod*2));
 		break;
 	case 2:
-		m_frameInterval = sf::microseconds((uint32_t)(gbperiod/.75));
+		_frameInterval = sf::microseconds((uint32_t)(gbperiod/.75));
 		break;
 	case 3:
-		m_frameInterval = sf::microseconds((uint32_t)gbperiod);
+		_frameInterval = sf::microseconds((uint32_t)gbperiod);
 		break;
 	case 4:
-		m_frameInterval = sf::microseconds((uint32_t)(gbperiod/1.5));
+		_frameInterval = sf::microseconds((uint32_t)(gbperiod/1.5));
 		break;
 	case 5:
-		m_frameInterval = sf::microseconds((uint32_t)(gbperiod/2));
+		_frameInterval = sf::microseconds((uint32_t)(gbperiod/2));
 		break;
 	case 6:
-		m_frameInterval = sf::microseconds((uint32_t)(gbperiod/3));
+		_frameInterval = sf::microseconds((uint32_t)(gbperiod/3));
 		break;
 	case 7:
-		m_frameInterval = sf::microseconds((uint32_t)(gbperiod/4));
+		_frameInterval = sf::microseconds((uint32_t)(gbperiod/4));
 		break;
 	case 8: 
-		m_frameInterval = sf::microseconds((uint32_t)(gbperiod/5));
+		_frameInterval = sf::microseconds((uint32_t)(gbperiod/5));
 		break;
 	case 9:
-		m_frameInterval = sf::microseconds((uint32_t)(gbperiod/7.5));
+		_frameInterval = sf::microseconds((uint32_t)(gbperiod/7.5));
 		break;
 	case 10:
-		m_frameInterval = sf::microseconds((uint32_t)(gbperiod/10));
+		_frameInterval = sf::microseconds((uint32_t)(gbperiod/10));
 		break;
 	default:
-		m_frameInterval = sf::microseconds((uint32_t)gbperiod);
+		_frameInterval = sf::microseconds((uint32_t)gbperiod);
 		break;
 	}
 }
@@ -179,10 +167,10 @@ bool linkboy::checkTime()
 {
 	bool re = false;
 
-	endTime = m_clock.getElapsedTime();
-	if ( (cpuTime + m_frameInterval) < endTime ) {
+	_endTime = _clock.getElapsedTime();
+	if ( (_cpuTime + _frameInterval) < _endTime ) {
 		re = true;
-		cpuTime = endTime;
+		_cpuTime = _endTime;
 	}
 	return re;
 }
@@ -191,15 +179,15 @@ bool linkboy::checkFrameTime()
 {
 	bool re = false;
 
-	++m_frameCount;
-	if ( (frameTime + sf::microseconds((uint32_t)gbperiod)) < endTime ) {
+	++_frameCount;
+	if ( (_frameTime + sf::microseconds((uint32_t)gbperiod)) < _endTime ) {
 
-		m_framePerSecond = m_frameCount / (double)((endTime - frameTime).asSeconds());
+		_framePerSecond = _frameCount / (double)((_endTime - _frameTime).asSeconds());
 
-		m_frameCount = 0;
+		_frameCount = 0;
 
 		re = true;
-		frameTime = endTime;
+		_frameTime= _endTime;
 	}
 	return re;
 }
@@ -208,14 +196,14 @@ void linkboy::saveState()
 {
 	uint32_t offset;
 	
-	if (m_saveState != nullptr) {
-		std::ifstream file(m_saveState, ios::out | ios::trunc);
+	if (_saveState != nullptr) {
+		std::ifstream file(_saveState, ios::out | ios::trunc);
 
 		if (file.is_open()) {
 			file.close();
-			offset = m_memory.saveToFile(m_saveState, 0);
-			offset = m_cpu.saveToFile(m_saveState, offset);
-			m_timer.saveToFile(m_saveState, offset);
+			offset = _memory.saveToFile(_saveState, 0);
+			offset = _cpu.saveToFile(_saveState, offset);
+			_timer.saveToFile(_saveState, offset);
 		}
 	}
 }
@@ -224,15 +212,15 @@ void linkboy::loadState()
 {
 	uint32_t offset;
 
-	if (m_saveState != nullptr) {
-		std::ifstream file(m_saveState, ios::in);
+	if (_saveState != nullptr) {
+		std::ifstream file(_saveState, ios::in);
 
 		if (file.is_open()) {
 			file.close();
 
-			offset = m_memory.loadFromFile(m_saveState, 0);
-			offset = m_cpu.loadFromFile(m_saveState, offset);
-			m_timer.loadFromFile(m_saveState, offset);
+			offset = _memory.loadFromFile(_saveState, 0);
+			offset = _cpu.loadFromFile(_saveState, offset);
+			_timer.loadFromFile(_saveState, offset);
 		}
 		else
 			std::cout << "No save state detected" << std::endl;
@@ -243,9 +231,9 @@ void linkboy::checkDebug()
 {
 	#ifdef DEBUG
 		//if breakpoint hit
-		if (m_cpu.getPC() == breakpoint) {
+		if (_cpu.getPC() == breakpoint) {
 			buffer[0] = '\0';
-			std::cout << "Breakpoint hit: " << std::hex << m_cpu.getPC();
+			std::cout << "Breakpoint hit: " << std::hex << _cpu.getPC();
 
 			while (buffer[0] != 'q' && buffer[0] != 'r' && buffer[0] != '*') {
 				std::cout << "\ncmd: ";
@@ -267,7 +255,7 @@ void linkboy::checkDebug()
 					} while (!convertString(breakpoint, buffer, 16));
 					break;
 				case '*':
-					m_settings.pause = true;
+					_settings.pause = true;
 					quit = true;
 					break;
 				default:
@@ -283,52 +271,52 @@ void linkboy::loadGame(const char * filename)
 	if (filename != nullptr) {
 		int len = lb_strlen(filename);
 
-		delete [] m_saveState;
-		m_saveState = new char[len + 4];
+		delete [] _saveState;
+		_saveState = new char[len + 4];
 
-		lb_strcpy(m_saveState, filename);
+		strcpy_s(_saveState, len + 4, filename);
 
-		m_saveState[len - 2] = 's';
-		m_saveState[len - 1] = 't';
-		m_saveState[len]	 = 'a';
-		m_saveState[len + 1] = 't';
-		m_saveState[len + 2] = 'e';
-		m_saveState[len + 3] = '\0';
+		_saveState[len - 2] = 's';
+		_saveState[len - 1] = 't';
+		_saveState[len]	 = 'a';
+		_saveState[len + 1] = 't';
+		_saveState[len + 2] = 'e';
+		_saveState[len + 3] = '\0';
 
-		m_memory.loadGame(filename);
-		m_cpu.loadGame();
-		m_sound.loadGame();
-		m_timer.loadGame();
+		_memory.loadGame(filename);
+		_cpu.loadGame();
+		_sound.loadGame();
+		_timer.loadGame();
 	}
 }
 
 void linkboy::handleNetwork()
 {
-	uint8_t gameMessage = m_memory.rdByteMMU(0xFF01);
+	uint8_t gameMessage = _memory.rdByteMMU(0xFF01);
 
 	//Check out going messages and send if at right time
-	if (m_client.getConnected()) {
-		if (m_timer.getMessageOut()) {
-			m_client.sendGameMessage(gameMessage);
-			m_timer.clrMessageOut();
+	if (_client.getConnected()) {
+		if (_timer.getMessageOut()) {
+			_client.sendGameMessage(gameMessage);
+			_timer.clrMessageOut();
 			expectingMessage = true;
 			//std::cout <<"Internal Clock: write -> " << std::hex << (uint32_t)gameMessage << "\n";
 		}
-		else if (expectingMessage && m_client.readGameMessage(gameMessage) != -1) {
-				m_memory.wrByteMMU(0xFF01, gameMessage);
+		else if (expectingMessage && _client.readGameMessage(gameMessage) != -1) {
+				_memory.wrByteMMU(0xFF01, gameMessage);
 				//std::cout <<"Internal Clock: read -> " << std::hex << (uint32_t)gameMessage << "\n\n";
 				expectingMessage = false;			
 		}
-		else if(m_timer.getMessageIn() ) {
-			if (m_client.readGameMessage(gameMessage) != -1) {
+		else if(_timer.getMessageIn() ) {
+			if (_client.readGameMessage(gameMessage) != -1) {
 				//std::cout << "\nExternal Clock: read  -> " << std::hex << (uint32_t)gameMessage << "\n";
-				//std::cout << "External Clock: write -> " << std::hex << (uint32_t)(m_memory.rdByteMMU(0xFF01)) << "\n\n";
-				m_client.sendGameMessage((m_memory.rdByteMMU(0xFF01)));
-				m_memory.wrByteMMU(0xFF01, gameMessage);
-				m_timer.clrSerialIn();
+				//std::cout << "External Clock: write -> " << std::hex << (uint32_t)(_memory.rdByteMMU(0xFF01)) << "\n\n";
+				_client.sendGameMessage((_memory.rdByteMMU(0xFF01)));
+				_memory.wrByteMMU(0xFF01, gameMessage);
+				_timer.clrSerialIn();
 			
 			}
-			m_timer.clrMessageIn();
+			_timer.clrMessageIn();
 		}
 	}
 }

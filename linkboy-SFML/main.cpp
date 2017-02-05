@@ -2,6 +2,7 @@
 #include <Windows.h>
 #endif
 
+#include <string.h>
 #include "DebugLogger/CycleLogger.h"
 #include "linkboy.h"
 
@@ -25,24 +26,21 @@ void getExectuablePath(char* buf, const int bufLen) {
 
 int main(int argc, char* argv[])
 {
-	const int PathLength = 200;
-	char currentPath[PathLength];
-	BaseLogger* log = CycleLogger::getInstance();
+	const int PATHLENGTH = 200;
+	char currentPath[PATHLENGTH];
 
 	#if defined(_WIN32)
-		lb_strcpy(currentPath, argv[0]);
+		strcpy_s(currentPath, PATHLENGTH, argv[0]);
 	#else
 		getExectuablePath(currentPath, PathLength);
 	#endif
 
-	//std::cout << "hello: " << currentPath << "\n";
-
 	if (argc > 1) {
-		linkboy boy(log, currentPath, argv[1]);
+		linkboy boy(currentPath, argv[1]);
 		boy.startEmulation();
 	}
 	else {
-		linkboy boy(log, currentPath);
+		linkboy boy(currentPath);
 		boy.startEmulation();
 	}
 

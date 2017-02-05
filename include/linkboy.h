@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "gbz80.h"
 #include "mmu.h"
 #include "ppu.h"
@@ -12,15 +13,12 @@
 
 class linkboy {
 
-	static const double gbperiod;
 
 	public:
-		linkboy(const char* dirName, const char* filename = nullptr);
-		linkboy(BaseLogger* log, const char* dirName, const char* filename = nullptr);
+		linkboy( const char* dirName, const char* filename = nullptr, BaseLogger* log = nullptr);
 		~linkboy();
 
 		void startEmulation();
-
 
 	private:
 		void saveState();
@@ -37,25 +35,27 @@ class linkboy {
 		bool checkTime();
 		bool checkFrameTime();
 
-		char*	m_saveState = nullptr;
+		char*	_saveState = nullptr;
 
-		MMU		m_memory;
-		gbz80	m_cpu;
-		PPU		m_display;
-		APU		m_sound;
-		timer	m_timer;
-		Client	m_client;
-		bool	m_pause;
+		MMU		_memory;
+		gbz80	_cpu;
+		PPU		_display;
+		APU		_sound;
+		timer	_timer;
+		Client	_client;
 
+		bool	_pause;
+
+	static const double gbperiod;
 #ifdef USING_SFML_TIME
-		sf::Clock m_clock;
-		sf::Time  cpuTime;
-		sf::Time  endTime;
-		sf::Time  frameTime;
-		sf::Time  m_frameInterval;
+		sf::Clock _clock;
+		sf::Time  _cpuTime;
+		sf::Time  _endTime;
+		sf::Time  _frameTime;
+		sf::Time  _frameInterval;
 #endif
-		double		m_framePerSecond	= 0;
-		double		m_frameCount		= 0;
+		double		_framePerSecond	= 0;
+		double		_frameCount		= 0;
 
-		emulatorSettings m_settings = {false, false, false, {}, 3, nullptr, 0.0, m_memory.JoyPad, NoOperation, {} };
+		emulatorSettings _settings = {false, false, false, {}, 3, nullptr, 0.0, _memory.JoyPad, NoOperation, {} };
 };
