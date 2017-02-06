@@ -70,9 +70,13 @@ const uint32_t* PPU::getBuffer()
 }
 
 void PPU::updateColor() {
-	for (int y = 0; y < 144; ++y)
-		for (int x = 0; x < 160; ++x)
-			m_buffer[y][x] = m_color[m_colorIndex[y][x]];
+	if (m_displayOn) {
+		for (int y = 0; y < 144; ++y)
+			for (int x = 0; x < 160; ++x)
+				m_buffer[y][x] = m_color[m_colorIndex[y][x]];
+	}
+	else
+		clearDisplay();
 }
 
 bool PPU::isVBlank()

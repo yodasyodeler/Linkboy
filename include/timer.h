@@ -1,6 +1,6 @@
 #pragma once
-#include "mmu.h"
 #include <stdint.h>
+#include "mmu.h"
 
 class timer {
 	static const int gbFrequency = 4194304;

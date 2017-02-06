@@ -7,12 +7,8 @@ const double linkboy::gbperiod = (1000000 / 59.7);
 
 linkboy::linkboy( const char* dirName, const char* filename, BaseLogger* log)
 	:_memory(filename), _cpu(&_memory, log), _display(&_memory), 
-	_sound(&_memory), _timer(&_memory), _clock(),
-	_frameInterval(sf::microseconds((uint32_t)gbperiod))
+	_sound(&_memory), _timer(&_memory), _clock()
 {
-	_frameTime		= _clock.getElapsedTime();
-	
-
 	loadGame(filename);
 	initScreen(160*2, 144*2, _display.getBuffer(), dirName);
 }
@@ -29,39 +25,38 @@ void linkboy::startEmulation()
 	bool	quit		=	false;
 
 	while (!quit) {
-		quit = handleEvents(_settings);			//Handle Events
-		handleSettings();
-
-		//CPU Step
-		if ( !_settings.pause && checkTime()) 
-		{
-			do {
-				//checkDebug();
-
-				_timer.advanceTimer(CPUCycle);
-				_sound.advanceSound(CPUCycle);
-				_display.advanceState(CPUCycle);
-				//link cable
-				handleNetwork();
-
-				if (!_cpu.getHalt())
-					CPUCycle = (_cpu.advanceCPU()*4);
-				else 
-					CPUCycle = 1;
-				
-				_memory.checkJoyPadPress();
-				CPUCycle += (_cpu.processInterrupt()*4);
-
-			} while ( !_display.isVBlank() && !_settings.pause);
+		if ( _clock.stepFrame()) {
 			
-			if ( _display.isDisplayOn() == false )
-				_display.clearDisplay();
+			quit = handleEvents(_settings);
+			handleSettings();
 
-			//max renders to 60fps
-			if (checkFrameTime()) {
-				_display.updateColor();
-				renderScreen();
-				_settings.framesPerSecond = _framePerSecond;
+			if ( !_settings.pause) {
+				do {
+					//checkDebug();
+
+					_timer.advanceTimer(CPUCycle);
+					_sound.advanceSound(CPUCycle);
+					_display.advanceState(CPUCycle);
+					//link cable
+					handleNetwork();
+
+					if (!_cpu.getHalt())
+						CPUCycle = (_cpu.advanceCPU()*4);
+					else 
+						CPUCycle = 1;
+					
+					_memory.checkJoyPadPress();
+					CPUCycle += (_cpu.processInterrupt()*4);
+
+				} while ( !_display.isVBlank() && !_settings.pause);
+				
+				
+				//render 60 times a sec
+				if (_clock.checkFrameTime()) {
+					_display.updateColor();
+					renderScreen();
+					_settings.fps = _clock.getFPS();
+				}
 			}
 		}
 	}
@@ -82,8 +77,8 @@ void linkboy::handleSettings()
 			break;
 		case ChangeSpeed:
 			if (_client.getConnected() == false) {
-				changeSpeed(_settings.speed);
-				_sound.changeSpeed(_settings.speed);
+				_clock.changeSpeed(_settings.speed);
+				//_sound.changeSpeed(_settings.speed); //currently no effect
 			}
 			break;
 		case SaveGameState:
@@ -95,7 +90,7 @@ void linkboy::handleSettings()
 		case ConnectToServer:
 			if (_client.getConnected() == false) {
 				if (_client.joinServer(_settings.network.ip, _settings.network.port, _settings.network.name) ) {
-					changeSpeed(3);
+					_clock.changeSpeed(3);
 					_sound.changeSpeed(3);
 					//_client.readLobby(0);
 					if (_client.joinLobby(0) == false) 
@@ -119,77 +114,6 @@ void linkboy::handleSettings()
 			break;
 	}
 
-}
-
-void linkboy::changeSpeed(const int speed)
-{
-	switch (speed) {
-	case 0:
-		_frameInterval	= sf::microseconds((uint32_t)(gbperiod*4));
-		break;
-	case 1:
-		_frameInterval = sf::microseconds((uint32_t)(gbperiod*2));
-		break;
-	case 2:
-		_frameInterval = sf::microseconds((uint32_t)(gbperiod/.75));
-		break;
-	case 3:
-		_frameInterval = sf::microseconds((uint32_t)gbperiod);
-		break;
-	case 4:
-		_frameInterval = sf::microseconds((uint32_t)(gbperiod/1.5));
-		break;
-	case 5:
-		_frameInterval = sf::microseconds((uint32_t)(gbperiod/2));
-		break;
-	case 6:
-		_frameInterval = sf::microseconds((uint32_t)(gbperiod/3));
-		break;
-	case 7:
-		_frameInterval = sf::microseconds((uint32_t)(gbperiod/4));
-		break;
-	case 8: 
-		_frameInterval = sf::microseconds((uint32_t)(gbperiod/5));
-		break;
-	case 9:
-		_frameInterval = sf::microseconds((uint32_t)(gbperiod/7.5));
-		break;
-	case 10:
-		_frameInterval = sf::microseconds((uint32_t)(gbperiod/10));
-		break;
-	default:
-		_frameInterval = sf::microseconds((uint32_t)gbperiod);
-		break;
-	}
-}
-
-bool linkboy::checkTime()
-{
-	bool re = false;
-
-	_endTime = _clock.getElapsedTime();
-	if ( (_cpuTime + _frameInterval) < _endTime ) {
-		re = true;
-		_cpuTime = _endTime;
-	}
-	return re;
-}
-
-bool linkboy::checkFrameTime()
-{
-	bool re = false;
-
-	++_frameCount;
-	if ( (_frameTime + sf::microseconds((uint32_t)gbperiod)) < _endTime ) {
-
-		_framePerSecond = _frameCount / (double)((_endTime - _frameTime).asSeconds());
-
-		_frameCount = 0;
-
-		re = true;
-		_frameTime= _endTime;
-	}
-	return re;
 }
 
 void linkboy::saveState()

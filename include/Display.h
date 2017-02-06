@@ -29,15 +29,13 @@ struct lobbySettings {
 };
 
 struct emulatorSettings {
+	const char* loadGameFile;
+	settingOperation operation;
 	bool pause;
-	bool displayHelp;
-	bool displayOptions;
+	double fps;
+	uint16_t& joyPad;
 	Color color[4];
 	int speed;
-	const char* loadGameFile;
-	double framesPerSecond;
-	uint16_t& joyPad;
-	settingOperation operation;
 	networkSettings network;
 	lobbySettings lobby;
 };

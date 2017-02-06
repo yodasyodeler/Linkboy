@@ -183,7 +183,7 @@ bool handleEvents( emulatorSettings& settings)
 
 	//Timer Delay for Label
 	if (displaySpeed == 2)
-		text.setText(("FPS: "+std::to_string((int)settings.framesPerSecond)).c_str());
+		text.setText(("FPS: "+std::to_string((int)settings.fps)).c_str());
 
 	settings.pause = pauseFocus || eventState != handleGame;
 

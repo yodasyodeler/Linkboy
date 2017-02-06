@@ -120,6 +120,9 @@
     <ClInclude Include="..\include\SFML-GUI\ColorMenu.h">
       <Filter>Header Files\SFML-GUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\SFMLClock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\common.cpp">
@@ -208,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="..\source\SFML-GUI\ColorMenu.cpp">
       <Filter>Source Files\SFML-GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SFMLClock.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
