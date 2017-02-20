@@ -198,7 +198,8 @@ void linkboy::loadGame(const char * filename)
 		delete [] _saveState;
 		_saveState = new char[len + 4];
 
-		strcpy_s(_saveState, len + 4, filename);
+		//strcpy_s(_saveState, len + 4, filename);
+		lb_strcpy(_saveState, filename);
 
 		_saveState[len - 2] = 's';
 		_saveState[len - 1] = 't';

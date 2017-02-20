@@ -1,5 +1,5 @@
 OBJS= common.o baseMBC.o  MBC1.o MBC2.o MBC3.o mmu.o CycleLogger.o FileLogger.o SmartLogger.o main.o \
- gbz80.o ppu.o timer.o apu.o Directory.o Rectangle.o Label.o Button.o TextBox.o  MainMenu.o \
+ gbz80.o ppu.o timer.o apu.o Directory.o Rectangle.o Label.o Button.o TextBox.o  MainMenu.o SFMLClock.o\
   FileMenu.o ControlMenu.o ColorMenu.o NetworkMenu.o LobbyMenu.o SFML_Display.o linkboyClient.o linkboy.o  
 # MBC5.o
 CC= g++
@@ -39,6 +39,9 @@ mmu.o: $(SRC)mmu.cpp $(INC)mmu.h
 
 ppu.o: $(SRC)ppu.cpp $(INC)ppu.h
 	$(CC) $(CFLAGS) $(SRC)ppu.cpp $(INCDIR) 
+
+SFMLClock.o: $(SRC)SFMLClock.cpp $(INC)SFMLClock.h
+	$(CC) $(CFLAGS) $(SRC)SFMLClock.cpp $(INCDIR)
 
 timer.o: $(SRC)timer.cpp $(INC)timer.h
 	$(CC) $(CFLAGS) $(SRC)timer.cpp $(INCDIR) 

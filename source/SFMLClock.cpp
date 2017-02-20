@@ -125,7 +125,7 @@ void Clock::setPerformance(bool performance)
 	_performance = performance;
 }
 
-bool Clock::getPerformance(bool performance)
+bool Clock::getPerformance()
 {
 	return _performance;
 }

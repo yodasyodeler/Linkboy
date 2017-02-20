@@ -2,7 +2,7 @@
 
 #include <chrono>
 #include <thread>
-#include "SFML\System.hpp"
+#include "SFML/System.hpp"
 
 class Clock {
 
@@ -19,7 +19,7 @@ class Clock {
 		double getFPS();
 
 		void setPerformance(bool performance);
-		bool getPerformance(bool performance);
+		bool getPerformance();
 
 	private:
 		bool stepFrameAccuracy();

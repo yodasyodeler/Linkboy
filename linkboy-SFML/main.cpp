@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	#if defined(_WIN32)
 		strcpy_s(currentPath, PATHLENGTH, argv[0]);
 	#else
-		getExectuablePath(currentPath, PathLength);
+		getExectuablePath(currentPath, PATHLENGTH);
 	#endif
 
 	if (argc > 1) {
