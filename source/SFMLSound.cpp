@@ -13,6 +13,8 @@ Sound::Sound(uint32_t samplerate)
 	m_ch4_sound.setLoop(false);
 }
 
+Sound::~Sound()
+{}
 
 void Sound::playChannel1(const int16_t* raw, const uint32_t samples)
 {

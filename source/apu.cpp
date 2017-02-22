@@ -14,13 +14,10 @@ const uint8_t APU::Ch4Div[8] = {
 
 APU::APU(MMU* memory)
 	:m_memory(memory)
-{
-	
-}
+{}
 
 APU::~APU()
-{
-}
+{}
 
 void APU::loadGame()
 {
@@ -140,7 +137,7 @@ void APU::advanceSound(const int cycle)
 			m_memory->mmIO[i] = 0;
 	}
 
-
+	//Record value on buffer
 	if (m_sound_on) {
 		//Channel 1 - Square
 		m_ch1_count -= cycle;
@@ -186,6 +183,7 @@ void APU::advanceSound(const int cycle)
 		while (m_sample_count <= 0) {
 			uint8_t soundControl = m_memory->mmIO[S_CONTROL];
 			m_sample_count += CyclesPerSample;
+
 
 			if (soundControl & 0x80) {
 				//Channel 1 - Square
@@ -235,6 +233,8 @@ void APU::advanceSound(const int cycle)
 		}
 	}
 
+
+	//FrameSync
 	m_framesync_cycle += cycle;
 	if (m_framesync_cycle > FramesyncPeriodCount) {
 
@@ -565,7 +565,7 @@ int APU::calculateSweep()
 			freqShift *= -1;
 	}
 
-//look up subtrahand
+	//look up subtrahand
 
 	return m_ch1_sweep_shadow + freqShift;
 }

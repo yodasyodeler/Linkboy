@@ -4,11 +4,15 @@
 #include <stdint.h>
 
 class APU {
-	static const uint32_t SAMPLES = 1024*8;
+	static const uint32_t SAMPLES = 456*2;
+	static const uint32_t FRAMELEN = 70224;
 	static const uint32_t SAMPLERATE = 44100;
 	static const uint32_t AMPLITUDE = 250;
+
 	static const int GBFreq = 4194304;
 	static const int FramesyncPeriodCount = (GBFreq/512);
+
+
 	static const uint8_t Duty[4][8]; 
 	static const uint8_t Ch4Div[8];
 
@@ -17,27 +21,19 @@ class APU {
 		~APU();
 
 		void loadGame();
-
 		void changeSpeed(const int speed);
-
 		void advanceSound(const int cycle);
-
 		const int16_t* getBuffer(int n);
-
 		uint32_t getNumSamples();
 
 	private:
 		inline void checkTrigger();
-
 		inline void advanceSweep();
-
 		inline void advanceLength(); 
-
 		inline void advanceEnvelope();
-
 		int calculateSweep();
 	
-		int CyclesPerSample = (GBFreq/SAMPLERATE);
+		int CyclesPerSample = (FRAMELEN/SAMPLES);
 
 		MMU*	m_memory;
 

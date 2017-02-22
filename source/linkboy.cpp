@@ -6,11 +6,11 @@ const double linkboy::gbperiod = (1000000 / 59.7);
 
 
 linkboy::linkboy( const char* dirName, const char* filename, BaseLogger* log)
-	:_memory(filename), _cpu(&_memory, log), _display(&_memory), 
-	_sound(&_memory), _timer(&_memory), _clock()
+	:_mmu(filename), _cpu(&_mmu, log), _ppu(&_mmu), 
+	_apu(&_mmu), _timer(&_mmu), _clock(), _sound(44100)
 {
 	loadGame(filename);
-	initScreen(160*2, 144*2, _display.getBuffer(), dirName);
+	initScreen(160*2, 144*2, _ppu.getBuffer(), dirName);
 }
 
 linkboy::~linkboy()
@@ -29,14 +29,15 @@ void linkboy::startEmulation()
 			
 			quit = handleEvents(_settings);
 			handleSettings();
-
+			//handleSound();
+			
 			if ( !_settings.pause) {
 				do {
 					//checkDebug();
 
 					_timer.advanceTimer(CPUCycle);
-					_sound.advanceSound(CPUCycle);
-					_display.advanceState(CPUCycle);
+					_apu.advanceSound(CPUCycle);
+					_ppu.advanceState(CPUCycle);
 					//link cable
 					handleNetwork();
 
@@ -45,15 +46,15 @@ void linkboy::startEmulation()
 					else 
 						CPUCycle = 1;
 					
-					_memory.checkJoyPadPress();
+					_mmu.checkJoyPadPress();
 					CPUCycle += (_cpu.processInterrupt()*4);
 
-				} while ( !_display.isVBlank() && !_settings.pause);
+				} while ( !_ppu.isVBlank() && !_settings.pause);
 				
 				
 				//render 60 times a sec
 				if (_clock.checkFrameTime()) {
-					_display.updateColor();
+					_ppu.updateColor();
 					renderScreen();
 					_settings.fps = _clock.getFPS();
 				}
@@ -71,14 +72,14 @@ void linkboy::handleSettings()
 			loadGame(_settings.loadGameFile);
 			break;
 		case ChangeColor:
-			_display.changeColor(_settings.color);
-			_display.updateColor();
+			_ppu.changeColor(_settings.color);
+			_ppu.updateColor();
 			renderScreen();		
 			break;
 		case ChangeSpeed:
 			if (_client.getConnected() == false) {
 				_clock.changeSpeed(_settings.speed);
-				//_sound.changeSpeed(_settings.speed); //currently no effect
+				//_apu.changeSpeed(_settings.speed); //currently no effect
 			}
 			break;
 		case SaveGameState:
@@ -91,7 +92,7 @@ void linkboy::handleSettings()
 			if (_client.getConnected() == false) {
 				if (_client.joinServer(_settings.network.ip, _settings.network.port, _settings.network.name) ) {
 					_clock.changeSpeed(3);
-					_sound.changeSpeed(3);
+					_apu.changeSpeed(3);
 					//_client.readLobby(0);
 					if (_client.joinLobby(0) == false) 
 						_client.createLobby();
@@ -125,7 +126,7 @@ void linkboy::saveState()
 
 		if (file.is_open()) {
 			file.close();
-			offset = _memory.saveToFile(_saveState, 0);
+			offset = _mmu.saveToFile(_saveState, 0);
 			offset = _cpu.saveToFile(_saveState, offset);
 			_timer.saveToFile(_saveState, offset);
 		}
@@ -142,7 +143,7 @@ void linkboy::loadState()
 		if (file.is_open()) {
 			file.close();
 
-			offset = _memory.loadFromFile(_saveState, 0);
+			offset = _mmu.loadFromFile(_saveState, 0);
 			offset = _cpu.loadFromFile(_saveState, offset);
 			_timer.loadFromFile(_saveState, offset);
 		}
@@ -208,16 +209,16 @@ void linkboy::loadGame(const char * filename)
 		_saveState[len + 2] = 'e';
 		_saveState[len + 3] = '\0';
 
-		_memory.loadGame(filename);
+		_mmu.loadGame(filename);
 		_cpu.loadGame();
-		_sound.loadGame();
+		_apu.loadGame();
 		_timer.loadGame();
 	}
 }
 
 void linkboy::handleNetwork()
 {
-	uint8_t gameMessage = _memory.rdByteMMU(0xFF01);
+	uint8_t gameMessage = _mmu.rdByteMMU(0xFF01);
 
 	//Check out going messages and send if at right time
 	if (_client.getConnected()) {
@@ -228,20 +229,29 @@ void linkboy::handleNetwork()
 			//std::cout <<"Internal Clock: write -> " << std::hex << (uint32_t)gameMessage << "\n";
 		}
 		else if (expectingMessage && _client.readGameMessage(gameMessage) != -1) {
-				_memory.wrByteMMU(0xFF01, gameMessage);
+				_mmu.wrByteMMU(0xFF01, gameMessage);
 				//std::cout <<"Internal Clock: read -> " << std::hex << (uint32_t)gameMessage << "\n\n";
 				expectingMessage = false;			
 		}
 		else if(_timer.getMessageIn() ) {
 			if (_client.readGameMessage(gameMessage) != -1) {
 				//std::cout << "\nExternal Clock: read  -> " << std::hex << (uint32_t)gameMessage << "\n";
-				//std::cout << "External Clock: write -> " << std::hex << (uint32_t)(_memory.rdByteMMU(0xFF01)) << "\n\n";
-				_client.sendGameMessage((_memory.rdByteMMU(0xFF01)));
-				_memory.wrByteMMU(0xFF01, gameMessage);
+				//std::cout << "External Clock: write -> " << std::hex << (uint32_t)(_mmu.rdByteMMU(0xFF01)) << "\n\n";
+				_client.sendGameMessage((_mmu.rdByteMMU(0xFF01)));
+				_mmu.wrByteMMU(0xFF01, gameMessage);
 				_timer.clrSerialIn();
 			
 			}
 			_timer.clrMessageIn();
 		}
 	}
+}
+
+void linkboy::handleSound()
+{
+	uint32_t samples = _apu.getNumSamples();
+	_sound.playChannel1(_apu.getBuffer(1), samples);
+	_sound.playChannel2(_apu.getBuffer(2), samples);
+	_sound.playChannel3(_apu.getBuffer(3), samples);
+	_sound.playChannel4(_apu.getBuffer(4), samples);
 }
