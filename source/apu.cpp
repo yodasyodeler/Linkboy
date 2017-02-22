@@ -15,14 +15,7 @@ const uint8_t APU::Ch4Div[8] = {
 APU::APU(MMU* memory)
 	:m_memory(memory)
 {
-	m_ch1_sound.setBuffer(m_ch1_buffer);
-	m_ch1_sound.setLoop(false);
-	m_ch2_sound.setBuffer(m_ch2_buffer);
-	m_ch2_sound.setLoop(false);
-	m_ch3_sound.setBuffer(m_ch3_buffer);
-	m_ch3_sound.setLoop(false);
-	m_ch4_sound.setBuffer(m_ch4_buffer);
-	m_ch4_sound.setLoop(false);
+	
 }
 
 APU::~APU()
@@ -63,10 +56,6 @@ void APU::loadGame()
 	m_ch4_lsfr				= 0;
 
 	m_memory->mmIO[S_CONTROL] = 0;
-
-	m_ch1_sound.stop();
-	m_ch2_sound.stop();
-	m_ch3_sound.stop();
 }
 
 void APU::changeSpeed(const int speed)
@@ -239,24 +228,13 @@ void APU::advanceSound(const int cycle)
 			}
 
 			m_sample_index += 1;
+			//used to play sounds here, can be optimized
 			if (m_sample_index >= SAMPLES) {
 				m_sample_index = 0;
-
-				//Sound WIP
-				/*m_ch1_buffer.loadFromSamples(m_ch1_raw, SAMPLES, 1, SAMPLERATE);
-				m_ch1_sound.play();
-
-				m_ch2_buffer.loadFromSamples(m_ch2_raw, SAMPLES, 1, SAMPLERATE);
-				m_ch2_sound.play();
-
-				m_ch3_buffer.loadFromSamples(m_ch3_raw, SAMPLES, 1, SAMPLERATE);
-				m_ch3_sound.play();
-
-				m_ch4_buffer.loadFromSamples(m_ch4_raw, SAMPLES, 1, SAMPLERATE);
-				m_ch4_sound.play();*/
 			}
 		}
 	}
+
 	m_framesync_cycle += cycle;
 	if (m_framesync_cycle > FramesyncPeriodCount) {
 
@@ -285,6 +263,34 @@ void APU::advanceSound(const int cycle)
 		}
 		m_framesync_count = (m_framesync_count + 1) & 7;
 	}
+}
+
+const int16_t* APU::getBuffer(int n)
+{
+	int16_t* re = nullptr;
+	switch (n) {
+		case 0:
+			re = m_ch1_raw;
+			break;
+		case 1:
+			re = m_ch2_raw;
+			break;
+		case 2:
+			re = m_ch3_raw;
+			break;
+		case 3:
+			re = m_ch4_raw;
+			break;
+		default:
+			break;
+	}
+
+	return re;
+}
+
+uint32_t APU::getNumSamples()
+{
+	return SAMPLES;
 }
 
 inline void APU::checkTrigger()

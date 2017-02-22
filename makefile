@@ -1,6 +1,9 @@
 OBJS= common.o baseMBC.o  MBC1.o MBC2.o MBC3.o mmu.o CycleLogger.o FileLogger.o SmartLogger.o main.o \
- gbz80.o ppu.o timer.o apu.o Directory.o Rectangle.o Label.o Button.o TextBox.o  MainMenu.o SFMLClock.o\
-  FileMenu.o ControlMenu.o ColorMenu.o NetworkMenu.o LobbyMenu.o SFML_Display.o linkboyClient.o linkboy.o  
+      gbz80.o ppu.o timer.o apu.o Directory.o Rectangle.o Label.o Button.o TextBox.o  MainMenu.o \
+      linkboyClient.o linkboy.o  
+
+SFML_OBJS= SFMLClock.o SFMLSound.o FileMenu.o ControlMenu.o ColorMenu.o NetworkMenu.o LobbyMenu.o SFML_Display.o
+
 # MBC5.o
 CC= g++
 
@@ -22,8 +25,8 @@ EXECUTABLE= $(OUT_DIR)linkboy
 
 all: dir linkboy
 
-linkboy: $(OBJS)
-	$(CC) $(VER) $(OBJS) $(INCDIR) -o $(EXECUTABLE) $(LIBS)
+linkboy: $(OBJS) $(SFML_OBJS)
+	$(CC) $(VER) $(OBJS) $(SFML_OBJS) $(INCDIR) -o $(EXECUTABLE) $(LIBS)
 
 main.o: linkboy-SFML/main.cpp
 	$(CC) $(CFLAGS) linkboy-SFML/main.cpp $(INCDIR) 
@@ -42,6 +45,9 @@ ppu.o: $(SRC)ppu.cpp $(INC)ppu.h
 
 SFMLClock.o: $(SRC)SFMLClock.cpp $(INC)SFMLClock.h
 	$(CC) $(CFLAGS) $(SRC)SFMLClock.cpp $(INCDIR)
+
+SFMLSound.o: $(SRC)SFMLSound.cpp $(INC)SFMLSound.h
+	$(CC) $(CFLAGS) $(SRC)SFMLSound.cpp $(INCDIR)
 
 timer.o: $(SRC)timer.cpp $(INC)timer.h
 	$(CC) $(CFLAGS) $(SRC)timer.cpp $(INCDIR) 

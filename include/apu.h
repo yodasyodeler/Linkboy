@@ -1,5 +1,4 @@
 #pragma once
-#include <SFML/Audio.hpp>
 #include <iostream>
 #include "mmu.h"
 #include <stdint.h>
@@ -22,6 +21,10 @@ class APU {
 		void changeSpeed(const int speed);
 
 		void advanceSound(const int cycle);
+
+		const int16_t* getBuffer(int n);
+
+		uint32_t getNumSamples();
 
 	private:
 		inline void checkTrigger();
@@ -77,16 +80,4 @@ class APU {
 		int16_t m_ch3_raw[SAMPLES] = {};
 		int16_t m_ch4_raw[SAMPLES] = {};
 
-
-		sf::SoundBuffer m_ch1_buffer;
-		sf::Sound		m_ch1_sound;
-
-		sf::SoundBuffer m_ch2_buffer;
-		sf::Sound		m_ch2_sound;
-
-		sf::SoundBuffer m_ch3_buffer;
-		sf::Sound		m_ch3_sound;
-
-		sf::SoundBuffer m_ch4_buffer;
-		sf::Sound		m_ch4_sound;
 };
