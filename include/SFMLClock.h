@@ -38,5 +38,5 @@ class Clock {
 		double _FPS 		= 0;
 		double _frameCount 	= 0;
 
-		bool _performance = false;
+		bool _performance = true;
 };

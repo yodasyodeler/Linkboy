@@ -28,7 +28,7 @@ MainMenu::MainMenu()
 	m_label[0].setText("Load");
 	m_label[1].setText("Layout");
 	m_label[2].setText("Link");
-	m_label[3].setText("Test");
+	m_label[3].setText("Color");
 }
 
 MainMenu::MainMenu(const sf::Font & font) //const unsigned int width, const unsigned int height, 

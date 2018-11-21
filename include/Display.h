@@ -13,7 +13,10 @@ enum settingOperation {
 	LoadGameState,
 	ConnectToServer,
 	ReadLobby,
-	JoinLobby
+	JoinLobby,
+	ToggleBackground,
+	ToggleWindow,
+	ToggleSprites
 };
 
 struct networkSettings {

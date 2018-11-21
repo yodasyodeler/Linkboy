@@ -111,6 +111,15 @@ void linkboy::handleSettings()
 
 			}
 			break;
+		case ToggleBackground:
+			_ppu.toggleBackground();
+			break;
+		case ToggleWindow:
+			_ppu.toggleWindow();
+			break;
+		case ToggleSprites:
+			_ppu.toggleSprites();
+			break;
 		default:
 			break;
 	}
@@ -250,8 +259,8 @@ void linkboy::handleNetwork()
 void linkboy::handleSound()
 {
 	uint32_t samples = _apu.getNumSamples();
-	_sound.playChannel1(_apu.getBuffer(1), samples);
-	_sound.playChannel2(_apu.getBuffer(2), samples);
-	_sound.playChannel3(_apu.getBuffer(3), samples);
-	_sound.playChannel4(_apu.getBuffer(4), samples);
+	_sound.playChannel1(_apu.getBuffer(0), samples);
+	_sound.playChannel2(_apu.getBuffer(1), samples);
+	_sound.playChannel3(_apu.getBuffer(2), samples);
+	_sound.playChannel4(_apu.getBuffer(3), samples);
 }

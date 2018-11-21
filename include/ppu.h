@@ -31,28 +31,37 @@ class PPU {
 		bool				isVBlank();
 		bool				isDisplayOn();
 		
+		void				toggleBackground();
+		void				toggleWindow();
+		void				toggleSprites();
+
 	private:
 		int					HBlank();
 		int					readOAM();
 		int					readVRAM();
 		int					VBlank();
 
-		bool	m_VBlank					=		false;
-		bool	m_displayOn					=		false;
+		bool	_VBlank						=		false;
+		bool	_displayOn					=		false;
 
-		int		(PPU::*m_currentState)()	=		&PPU::readOAM;
+		int		(PPU::*_currentState)()	=		&PPU::readOAM;
 
-		int		m_stateTime					=		80;
-		int		m_cycle						=		0;
+		int		_stateTime					=		80;
+		int		_cycle						=		0;
 		
-		int		m_offDelay					=		0;
+		int		_offDelay					=		0;
 
-		MMU*	m_memory					=		nullptr;
+		MMU*	_memory						=		nullptr;
+
+		bool	_enableBackground			=		true;
+		bool	_enableWindow				=		true;
+		bool	_enableSprites				=		true;
+
 
 		//Display Buffer
-		Color	m_color[4];
-		Color	m_buffer[144][160];
-		uint8_t m_colorIndex[144][160];
+		Color	_color[4];
+		Color	_buffer[144][160];
+		uint8_t _colorIndex[144][160];
 
 		const Color WHITE		= {0xFFFFFFFF};
 		const Color DARKGREY	= {0xFF909090};

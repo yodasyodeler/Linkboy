@@ -295,11 +295,24 @@ void handleGame(const sf::Event& event, emulatorSettings& settings)
 				}
 			}
 
-			if (event.key.code == Keyboard::Home)
+			if (event.key.code == Keyboard::F9)
 				settings.operation = LoadGameState;
 
-			if (event.key.code == Keyboard::End)
+			if (event.key.code == Keyboard::F5)
 				settings.operation = SaveGameState;
+
+			if (event.key.code == Keyboard::F1)
+				settings.operation = ToggleBackground;
+
+			if (event.key.code == Keyboard::F2)
+				settings.operation = ToggleWindow;
+
+			if (event.key.code == Keyboard::F3)
+				settings.operation = ToggleSprites;
+
+			if (event.key.code == Keyboard::F10)
+				pauseFocus = !pauseFocus;
+
 			break;
 
 		// case sf::Event::LostFocus: 

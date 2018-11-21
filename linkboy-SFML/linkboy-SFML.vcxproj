@@ -189,6 +189,7 @@
     <ClInclude Include="..\include\SFML-GUI\Rectangle.h" />
     <ClInclude Include="..\include\SFML-GUI\TextBox.h" />
     <ClInclude Include="..\include\SFMLClock.h" />
+    <ClInclude Include="..\include\SFMLSound.h" />
     <ClInclude Include="..\include\timer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +221,7 @@
     <ClCompile Include="..\source\SFML-GUI\SFML_Display.cpp" />
     <ClCompile Include="..\source\SFML-GUI\TextBox.cpp" />
     <ClCompile Include="..\source\SFMLClock.cpp" />
+    <ClCompile Include="..\source\SFMLSound.cpp" />
     <ClCompile Include="..\source\timer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

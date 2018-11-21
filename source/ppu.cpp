@@ -1,58 +1,58 @@
 #include "ppu.h"
 
 PPU::PPU(MMU* memory)
-	:m_memory(memory)
+	:_memory(memory)
 {
-	m_color[0] = WHITE;
-	m_color[1] = DARKGREY;
-	m_color[2] = LIGHTGREY;
-	m_color[3] = BLACK;
+	_color[0] = WHITE;
+	_color[1] = DARKGREY;
+	_color[2] = LIGHTGREY;
+	_color[3] = BLACK;
 }
 
 PPU::~PPU()
 {
-	m_memory = nullptr;
-	m_currentState = nullptr;
+	_memory = nullptr;
+	_currentState = nullptr;
 }
 
 void PPU::changeColor(const Color color[4])
 {
 	for (int i=0; i<4; ++i)
-		m_color[i] = color[i];
+		_color[i] = color[i];
 }
 
 void PPU::advanceState(const int cycle)
 {
-	uint8_t LCDC = m_memory->mmIO[LCDC_CONTROL];
-	m_displayOn = (LCDC & 0x80) != 0;
-	m_VBlank = false;
+	uint8_t LCDC = _memory->mmIO[LCDC_CONTROL];
+	_displayOn = (LCDC & 0x80) != 0;
+	_VBlank = false;
 
 	//Display not Enabled
-	if (!(m_displayOn)) {
-		m_memory->mmIO[LY] = 0;
-		m_memory->mmIO[LCDC_STAT] = ((m_memory->mmIO[LCDC_STAT] & 0b11111100) | 0b01);
+	if (!(_displayOn)) {
+		_memory->mmIO[LY] = 0;
+		_memory->mmIO[LCDC_STAT] = ((_memory->mmIO[LCDC_STAT] & 0b11111100) | 0b01);
 
 		//Prevent LockOut
-		m_offDelay += cycle;
-		if (m_offDelay >= 70224) {
-			m_offDelay = 0;
-			m_VBlank = true;
+		_offDelay += cycle;
+		if (_offDelay >= 70224) {
+			_offDelay = 0;
+			_VBlank = true;
 		}
 		
 	}
 	else {
-		m_cycle += cycle;
+		_cycle += cycle;
 		//Implement Graphical Hardware Bugs
 
 
 		//Perform State 
-		if (m_cycle >= m_stateTime) {
-			m_cycle -= m_stateTime;
-			m_stateTime = (this->*(m_currentState))();
+		if (_cycle >= _stateTime) {
+			_cycle -= _stateTime;
+			_stateTime = (this->*(_currentState))();
 
 			//Check V-blank Interrupt
-			if (m_memory->mmIO[LY] == 144)
-				m_memory->mmIO[IF] |= 1;
+			if (_memory->mmIO[LY] == 144)
+				_memory->mmIO[IF] |= 1;
 		}
 	}
 }
@@ -61,19 +61,19 @@ void PPU::clearDisplay()
 {
 	for (int y = 0; y < 144; ++y)
 		for (int x = 0; x < 160; ++x)
-			m_colorIndex[y][x] = 0;
+			_colorIndex[y][x] = 0;
 }
 
 const uint32_t* PPU::getBuffer()
 {
-	return (const uint32_t*)m_buffer;
+	return (const uint32_t*)_buffer;
 }
 
 void PPU::updateColor() {
-	if (m_displayOn) {
+	if (_displayOn) {
 		for (int y = 0; y < 144; ++y)
 			for (int x = 0; x < 160; ++x)
-				m_buffer[y][x] = m_color[m_colorIndex[y][x]];
+				_buffer[y][x] = _color[_colorIndex[y][x]];
 	}
 	else
 		clearDisplay();
@@ -81,12 +81,27 @@ void PPU::updateColor() {
 
 bool PPU::isVBlank()
 {
-	return m_VBlank;
+	return _VBlank;
 }
 
 bool PPU::isDisplayOn()
 {
-	return m_displayOn;
+	return _displayOn;
+}
+
+void PPU::toggleBackground()
+{
+	_enableBackground = !_enableBackground;
+}
+
+void PPU::toggleWindow()
+{
+	_enableWindow = !_enableWindow;
+}
+
+void PPU::toggleSprites()
+{
+	_enableSprites = !_enableSprites;
 }
 
 int PPU::HBlank()
@@ -94,52 +109,52 @@ int PPU::HBlank()
 	int re = OAMCycles;
 
 	//State Transition
-	if (m_memory->mmIO[LY] >= 143) {
-		m_memory->mmIO[LCDC_STAT] |= 1;
-		m_VBlank = true;
-		m_currentState = &PPU::VBlank;
+	if (_memory->mmIO[LY] >= 143) {
+		_memory->mmIO[LCDC_STAT] |= 1;
+		_VBlank = true;
+		_currentState = &PPU::VBlank;
 		re = VBlankLineCycles;
 
 		//Interrupt Mode 1 V-blank
-		if (m_memory->mmIO[LCDC_STAT] & 0x10)
-			m_memory->mmIO[IF] |= 2;
+		if (_memory->mmIO[LCDC_STAT] & 0x10)
+			_memory->mmIO[IF] |= 2;
 
 	}
 	else {
-		m_memory->mmIO[LCDC_STAT] |= 0b10;
-		m_currentState = &PPU::readOAM;
+		_memory->mmIO[LCDC_STAT] |= 0b10;
+		_currentState = &PPU::readOAM;
 	}
 
 	//Interrupt LY coincidence
-	if (m_memory->mmIO[LY] == m_memory->mmIO[LYC]) {
-		if (m_memory->mmIO[LCDC_STAT] & 0x40)
-			m_memory->mmIO[IF] |= 2;
-		m_memory->mmIO[LCDC_STAT] |= 0x4;
+	if (_memory->mmIO[LY] == _memory->mmIO[LYC]) {
+		if (_memory->mmIO[LCDC_STAT] & 0x40)
+			_memory->mmIO[IF] |= 2;
+		_memory->mmIO[LCDC_STAT] |= 0x4;
 	}
 	else
-		m_memory->mmIO[LCDC_STAT] &= ~(0x4);
+		_memory->mmIO[LCDC_STAT] &= ~(0x4);
 
 	//Operation
-	++m_memory->mmIO[LY];
+	++_memory->mmIO[LY];
 
 	return re;
 }
 
 int PPU::readOAM()
 {
-	m_memory->mmIO[LCDC_STAT]  |= 1;
+	_memory->mmIO[LCDC_STAT]  |= 1;
 
-	m_currentState				= &PPU::readVRAM;
+	_currentState				= &PPU::readVRAM;
 
 	return VRAMCycles;
 }
 
 int PPU::readVRAM()
 {
-	uint8_t LCDC			= m_memory->mmIO[LCDC_CONTROL];
-	uint8_t line			= m_memory->mmIO[LY];
+	uint8_t LCDC			= _memory->mmIO[LCDC_CONTROL];
+	uint8_t line			= _memory->mmIO[LY];
 
-	int32_t temp = m_memory->mmIO[BGP];
+	int32_t temp = _memory->mmIO[BGP];
 
 	uint8_t BGcolor[4] = {
 		(uint8_t)(temp & 0x03), 
@@ -152,15 +167,15 @@ int PPU::readVRAM()
 	uint8_t colorOffset;
 
 	if (LCDC & 1) {
-		uint8_t scrollX			= m_memory->mmIO[SCX];
-		int16_t winY			= m_memory->mmIO[WY];
-		int16_t winX			= m_memory->mmIO[WX] - 7;
+		uint8_t scrollX			= _memory->mmIO[SCX];
+		int16_t winY			= _memory->mmIO[WY];
+		int16_t winX			= _memory->mmIO[WX] - 7;
 
 		uint16_t WinTileMap		= ((LCDC & 0x40) ? 0x1C00 : 0x1800);
 		uint16_t BGWinTileData	= ((LCDC & 0x10) ? 0x0000 : 0x0800) << 1;
 		uint16_t BGTileMap		=  (LCDC & 0x08) ? 0x1C00 : 0x1800;
 
-		uint16_t posY			= ((m_memory->mmIO[SCY] + line) & 0xFF); 
+		uint16_t posY			= ((_memory->mmIO[SCY] + line) & 0xFF); 
 		
 
 		int	pixel				=	0;
@@ -173,7 +188,7 @@ int PPU::readVRAM()
 		int	endPoint2			=	(scrollX & 0x7);
 
 		//If Window Enabled
-		if (LCDC & 0x20 && line >= winY && winX < 160) {
+		if (_enableWindow && (LCDC & 0x20) && line >= winY && winX < 160) {
 
 			startWindow = winX & 0xFFF8;
 
@@ -194,60 +209,65 @@ int PPU::readVRAM()
 		BGWinTileData += ((posY & 0x7) << 1);
 	
 		//--------------Start Background--------------
-		//--------------BackGround First Tile--------------
-		posX		= scrollX;
-		if (LCDC & 0x10)											//Grab Tile number From BG Tile Map
-			temp = m_memory->VRAM[ BGTileMap + ((posY >>3)<<5) + (posX>>3) ];
-		else
-			temp = (int8_t)m_memory->VRAM[ BGTileMap + ((posY >>3)<<5) + (posX>>3) ];
-		temp <<= 4;
+		if (_enableBackground) {
+			//--------------BackGround First Tile--------------
+			posX = scrollX;
+			if (LCDC & 0x10)											//Grab Tile number From BG Tile Map
+				temp = _memory->VRAM[BGTileMap + ((posY >> 3) << 5) + (posX >> 3)];
+			else
+				temp = (int8_t)_memory->VRAM[BGTileMap + ((posY >> 3) << 5) + (posX >> 3)];
+			temp <<= 4;
 
-		pixelData1	= m_memory->VRAM[ BGWinTileData + temp ];
-		pixelData2	= m_memory->VRAM[ BGWinTileData + temp + 1 ];
+			pixelData1 = _memory->VRAM[BGWinTileData + temp];
+			pixelData2 = _memory->VRAM[BGWinTileData + temp + 1];
 
-		for (int i = posX & 0x7; i < endPoint1; ++i) {
-			colorOffset	= BGcolor[ (pixelData1 >> (7-i) & 0x1) | (((pixelData2 >> (7-i)) & 0x1) << 1) ];		//Grab Tile Color Pallet
-			m_colorIndex[line][pixel++] = colorOffset;															//Update Pixel
-		}
+			for (int i = posX & 0x7; i < endPoint1; ++i) {
+				colorOffset = BGcolor[(pixelData1 >> (7 - i) & 0x1) | (((pixelData2 >> (7 - i)) & 0x1) << 1)];		//Grab Tile Color Pallet
+				_colorIndex[line][pixel++] = colorOffset;															//Update Pixel
+			}
 
-		
-		//--------------BackGround Midsection--------------
-		while (pixel < startWindow) {
+
+			//--------------BackGround Midsection--------------
+			while (pixel < startWindow) {
+				posX = pixel + scrollX;
+
+				if (LCDC & 0x10)											//Grab Tile number From BG Tile Map
+					temp = _memory->VRAM[BGTileMap + ((posY >> 3) << 5) + (posX >> 3)];
+				else
+					temp = (int8_t)_memory->VRAM[BGTileMap + ((posY >> 3) << 5) + (posX >> 3)];
+				temp <<= 4;
+
+				pixelData1 = _memory->VRAM[BGWinTileData + temp];
+				pixelData2 = _memory->VRAM[BGWinTileData + temp + 1];
+
+				for (int i = 0; i < 8; ++i) {
+					colorOffset = BGcolor[(pixelData1 >> (7 - i) & 0x1) | (((pixelData2 >> (7 - i)) & 0x1) << 1)];		//Grab Tile Color Pallet
+					_colorIndex[line][pixel++] = colorOffset;											//Update Pixel
+				}
+			}
+
+
+			//--------------BackGround End Tile--------------
 			posX = pixel + scrollX;
 
 			if (LCDC & 0x10)											//Grab Tile number From BG Tile Map
-				temp = m_memory->VRAM[ BGTileMap + ((posY >>3)<<5) + (posX>>3) ];
+				temp = _memory->VRAM[BGTileMap + ((posY >> 3) << 5) + (posX >> 3)];
 			else
-				temp = (int8_t)m_memory->VRAM[ BGTileMap + ((posY >>3)<<5) + (posX>>3) ];
+				temp = (int8_t)_memory->VRAM[BGTileMap + ((posY >> 3) << 5) + (posX >> 3)];
 			temp <<= 4;
 
-			pixelData1 = m_memory->VRAM[ BGWinTileData + temp ];
-			pixelData2 = m_memory->VRAM[ BGWinTileData + temp + 1 ];
+			pixelData1 = _memory->VRAM[BGWinTileData + temp];
+			pixelData2 = _memory->VRAM[BGWinTileData + temp + 1];
 
-			for (int i = 0; i < 8; ++i) {
-				colorOffset = BGcolor[(pixelData1 >> (7-i) & 0x1) | (((pixelData2 >> (7-i)) & 0x1) << 1)];		//Grab Tile Color Pallet
-				m_colorIndex[line][pixel++] = colorOffset;											//Update Pixel
+			for (int i = 0; i < endPoint2; ++i) {
+				colorOffset = BGcolor[(pixelData1 >> (7 - i) & 0x1) | (((pixelData2 >> (7 - i)) & 0x1) << 1)];		//Grab Tile Color Pallet
+				_colorIndex[line][pixel++] = colorOffset;												//Update Pixel
 			}
 		}
-			
-
-		//--------------BackGround End Tile--------------
-		posX = pixel + scrollX;
-
-		if (LCDC & 0x10)											//Grab Tile number From BG Tile Map
-			temp = m_memory->VRAM[ BGTileMap + ((posY >>3)<<5) + (posX>>3) ];
-		else
-			temp = (int8_t)m_memory->VRAM[ BGTileMap + ((posY >>3)<<5) + (posX>>3) ];
-		temp <<= 4;
-
-		pixelData1 = m_memory->VRAM[ BGWinTileData + temp ];
-		pixelData2 = m_memory->VRAM[ BGWinTileData + temp + 1 ];
-
-		for (int i = 0; i < endPoint2; ++i) {
-			colorOffset = BGcolor[ (pixelData1 >> (7-i) & 0x1) | (((pixelData2 >> (7-i)) & 0x1) << 1) ];		//Grab Tile Color Pallet
-			m_colorIndex[line][pixel++] = colorOffset;												//Update Pixel
+		else {
+			while (pixel < startWindow + endPoint2)
+				_colorIndex[line][pixel++] = 0;
 		}
-		
 
 		//--------------Start Window--------------
 		if (startWindow != 160 - (scrollX & 0x7) ) {
@@ -260,17 +280,17 @@ int PPU::readVRAM()
 				posX = -winX;
 
 				if (LCDC & 0x10)											//Grab Tile number From BG Tile Map
-					temp = m_memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
+					temp = _memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
 				else
-					temp = (int8_t)m_memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
+					temp = (int8_t)_memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
 				temp <<= 4;
 
-				pixelData1 = m_memory->VRAM[ BGWinTileData + temp];
-				pixelData2 = m_memory->VRAM[ BGWinTileData + temp + 1 ];
+				pixelData1 = _memory->VRAM[ BGWinTileData + temp];
+				pixelData2 = _memory->VRAM[ BGWinTileData + temp + 1 ];
 
 				for (int i = posX; i < 8; ++i) {
 					colorOffset = BGcolor[(pixelData1 >> (7-i) & 0x1) | (((pixelData2 >> (7-i)) & 0x1) << 1)];			//Grab Tile Color Pallet
-					m_colorIndex[line][pixel++] = colorOffset;												//Update Pixel
+					_colorIndex[line][pixel++] = colorOffset;												//Update Pixel
 					++posX;
 				}
 			}
@@ -280,35 +300,35 @@ int PPU::readVRAM()
 				startWindow = winX;
 			while (pixel < 152 - startWindow) {
 				if (LCDC & 0x10)											//Grab Tile number From BG Tile Map
-					temp = m_memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
+					temp = _memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
 				else
-					temp = (int8_t)m_memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
+					temp = (int8_t)_memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
 				temp <<= 4;
 
-				pixelData1 = m_memory->VRAM[ BGWinTileData + temp ];
-				pixelData2 = m_memory->VRAM[ BGWinTileData + temp + 1 ];
+				pixelData1 = _memory->VRAM[ BGWinTileData + temp ];
+				pixelData2 = _memory->VRAM[ BGWinTileData + temp + 1 ];
 
 				for (int i = 0; i < 8; ++i) {
 					colorOffset = BGcolor[ (pixelData1>>(7-i) & 0x1) | (((pixelData2>>(7-i)) & 0x1) << 1) ];		//Grab Tile Color Pallet
-					m_colorIndex[line][pixel++] = colorOffset;											//Update Pixel
+					_colorIndex[line][pixel++] = colorOffset;											//Update Pixel
 					++posX;
 				}
 			}
 
 			//--------------Window End Tile--------------
 			if (LCDC & 0x10)											//Grab Tile number From BG Tile Map
-				temp = m_memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
+				temp = _memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
 			else
-				temp = (int8_t)m_memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
+				temp = (int8_t)_memory->VRAM[ WinTileMap + ((posY >>3)<<5) + (posX>>3) ];
 			temp <<= 4;
 
-			pixelData1 = m_memory->VRAM[ BGWinTileData + temp ];
-			pixelData2 = m_memory->VRAM[ BGWinTileData + temp + 1 ];
+			pixelData1 = _memory->VRAM[ BGWinTileData + temp ];
+			pixelData2 = _memory->VRAM[ BGWinTileData + temp + 1 ];
 
 			int i = 0;
 			while (pixel < 160) {
 				colorOffset = BGcolor[ (pixelData1>>(7-i) & 0x1) | (((pixelData2>>(7-i)) & 0x1) << 1) ];			//Grab Tile Color Pallet
-				m_colorIndex[line][pixel++] = colorOffset;												//Update Pixel
+				_colorIndex[line][pixel++] = colorOffset;												//Update Pixel
 				++i;
 				++posX;
 			}
@@ -317,14 +337,14 @@ int PPU::readVRAM()
 
 
 	//---Draw Sprites---
-	if (LCDC & 0b10) {
+	if (_enableSprites && (LCDC & 0b10)) {
 		uint16_t spriteHeight = (LCDC & 0x4) ? 16 : 8;
 
 		uint8_t spriteNum = 0;
 		spriteData sprites[11] = {};
 		spriteData tempSprite = {};
 
-		temp = m_memory->mmIO[OBP0];
+		temp = _memory->mmIO[OBP0];
 
 		uint8_t OBP0color[4];
 		OBP0color[3] = (temp & 0xC0) >> 6;
@@ -332,7 +352,7 @@ int PPU::readVRAM()
 		OBP0color[1] = (temp & 0x0C) >> 2;
 		OBP0color[0] = 0xFF;
 
-		temp = m_memory->mmIO[OBP1];
+		temp = _memory->mmIO[OBP1];
 
 		uint8_t OBP1color[4];
 		OBP1color[3] = (temp & 0xC0) >> 6;
@@ -345,10 +365,10 @@ int PPU::readVRAM()
 
 		//Obtain Priority of Sprites Being Displayed
 		for (int i = 0; i < 40 && spriteNum < 10; i++) {
-			tempSprite.y		= (m_memory->spriteRAM[i << 2] - 16);
-			tempSprite.x		= (m_memory->spriteRAM[(i << 2) + 1]);
-			tempSprite.tileNum	= (m_memory->spriteRAM[(i << 2) + 2]) & mask;
-			tempSprite.flags	= (m_memory->spriteRAM[(i << 2) + 3]);
+			tempSprite.y		= (_memory->spriteRAM[i << 2] - 16);
+			tempSprite.x		= (_memory->spriteRAM[(i << 2) + 1]);
+			tempSprite.tileNum	= (_memory->spriteRAM[(i << 2) + 2]) & mask;
+			tempSprite.flags	= (_memory->spriteRAM[(i << 2) + 3]);
 
 			if ( (tempSprite.y <= line) && ( (tempSprite.y + spriteHeight) > line) ) {
 				if (spriteNum == 0)
@@ -387,8 +407,8 @@ int PPU::readVRAM()
 					sprites[i].tileNum += 1;*/
 
 				spriteLine = (sprites[i].tileNum << 4) + (spriteLine << 1);
-				pixelData1 = m_memory->VRAM[spriteLine];
-				pixelData2 = m_memory->VRAM[spriteLine + 1];
+				pixelData1 = _memory->VRAM[spriteLine];
+				pixelData2 = _memory->VRAM[spriteLine + 1];
 
 				bool spritePriority = (sprites[i].flags & PRIORITY) == 0;
 
@@ -415,19 +435,19 @@ int PPU::readVRAM()
 
 				if (sprites[i].flags & X_FLIP) {
 					for (int j = endPoint; j >= startPoint; --j) {
-						if (spritePriority || (m_colorIndex[line][(endPoint-j)+sprites[i].x] == BGcolor[0])) {
+						if (spritePriority || (_colorIndex[line][(endPoint-j)+sprites[i].x] == BGcolor[0])) {
 							colorOffset = spriteColor[(((pixelData1 >> (7 - j)) & 0x1) | (((pixelData2 >> (7 - j)) & 0x1) << 1))];	//Grab Tile Color Pallet
 							if ( colorOffset != 0xFF)
-								m_colorIndex[line][(7-j)+sprites[i].x] = colorOffset;							//Update Pixel
+								_colorIndex[line][(7-j)+sprites[i].x] = colorOffset;							//Update Pixel
 						}
 					}
 				}   
 				else {
 					for (int j = startPoint; j <= endPoint; ++j) {
-						if ( spritePriority || (m_colorIndex[line][ (j-startPoint)+sprites[i].x ] == BGcolor[0]) ) {
+						if ( spritePriority || (_colorIndex[line][ (j-startPoint)+sprites[i].x ] == BGcolor[0]) ) {
 							colorOffset = spriteColor[((pixelData1 >> (7 - j) & 0x1) | (((pixelData2 >> (7 - j)) & 0x1) << 1))];	//Grab Tile Color Pallet
 							if ( colorOffset != 0xFF) 
-								m_colorIndex[line][ (j-startPoint)+sprites[i].x ] = colorOffset;									//Update Pixel
+								_colorIndex[line][ (j-startPoint)+sprites[i].x ] = colorOffset;									//Update Pixel
 						}
 					}
 				}
@@ -437,12 +457,12 @@ int PPU::readVRAM()
 	}
 
 	//State Transition
-	m_memory->mmIO[LCDC_STAT]	&= 0b11111100;
-	m_currentState				 = &PPU::HBlank;
+	_memory->mmIO[LCDC_STAT]	&= 0b11111100;
+	_currentState				 = &PPU::HBlank;
 
 	//Interrupt Mode 0 H-Blank
-	if (m_memory->mmIO[LCDC_STAT] & 0x08)
-		m_memory->mmIO[IF] |= 2;
+	if (_memory->mmIO[LCDC_STAT] & 0x08)
+		_memory->mmIO[IF] |= 2;
 
 	return HBlankCycles;
 }
@@ -452,30 +472,30 @@ int PPU::VBlank()
 	int re = VBlankLineCycles;
 
 	//State Transition
-	if (m_memory->mmIO[LY] >= 153) {
-		m_memory->mmIO[LY]			= 0;
-		m_memory->mmIO[LCDC_STAT]	= ( (m_memory->mmIO[LCDC_STAT] & 0b11111100) | 0b10 );
+	if (_memory->mmIO[LY] >= 153) {
+		_memory->mmIO[LY]			= 0;
+		_memory->mmIO[LCDC_STAT]	= ( (_memory->mmIO[LCDC_STAT] & 0b11111100) | 0b10 );
 
-		m_currentState				= &PPU::readOAM;
+		_currentState				= &PPU::readOAM;
 		re							= OAMCycles;
 
 		//Interrupt Mode 2 OAM
-		if (m_memory->mmIO[LCDC_STAT] & 0x20)
-			m_memory->mmIO[IF] |= 2;
+		if (_memory->mmIO[LCDC_STAT] & 0x20)
+			_memory->mmIO[IF] |= 2;
 			
 	}
 	else {
 		//Interrupt LY coincidence
-		if (m_memory->mmIO[LY] == m_memory->mmIO[LYC]) {
-			if (m_memory->mmIO[LCDC_STAT] & 0x40)
-				m_memory->mmIO[IF] |= 2;
-			m_memory->mmIO[LCDC_STAT] |= 0x4;
+		if (_memory->mmIO[LY] == _memory->mmIO[LYC]) {
+			if (_memory->mmIO[LCDC_STAT] & 0x40)
+				_memory->mmIO[IF] |= 2;
+			_memory->mmIO[LCDC_STAT] |= 0x4;
 		}
 		else
-			m_memory->mmIO[LCDC_STAT] &= ~(0x4);
+			_memory->mmIO[LCDC_STAT] &= ~(0x4);
 
 		//Operation
-		++m_memory->mmIO[LY];
+		++_memory->mmIO[LY];
 	}
 
 	return re;
